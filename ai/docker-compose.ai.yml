@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # AI FastAPI 서버
+  ai-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: myocean-ai-server
+    ports:
+      - "8000:8000"
+    environment:
+      - GMS_KEY=${GMS_KEY:-your_api_key_here}
+    networks:
+      - ocean-net
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# 기존 infra의 ocean-net 네트워크에 연결
+networks:
+  ocean-net:
+    external: true

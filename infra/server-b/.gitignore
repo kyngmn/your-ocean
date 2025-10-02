@@ -1,0 +1,80 @@
+# Ocean Data Infrastructure - gitignore
+
+# 데이터 디렉토리 (민감한 실제 데이터)
+data/
+data_backup_*/
+test-data/
+
+# 환경 설정 파일 (민감한 정보 포함)
+.env
+*.env
+.env.local
+.env.prod
+.env.staging
+
+# Docker 로그 및 볼륨
+*.log
+logs/
+docker-logs/
+
+# SSL 인증서 및 키 파일
+*.pem
+*.key
+*.crt
+*.cert
+ssl/
+certs/
+
+# MinIO 설정 및 시크릿
+access_key
+secret_key
+kms_master_key
+
+# Kafka 데이터
+kafka-data/
+zookeeper-data/
+
+# 모니터링 데이터
+prometheus-data/
+grafana-data/
+
+# 임시 파일
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS 생성 파일
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE 및 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker 관련
+.docker/
+docker-compose.override.yml
+
+# 백업 파일
+*.bak
+*.backup
+*_backup_*
+
+# JAR 파일 (JMX 에이전트 제외)
+# !jmx_prometheus_javaagent.jar
+
+# 압축 파일 (배포용 제외)
+*.tar
+*.tar.gz
+*.tar.bz2
+*.zip
+*.rar

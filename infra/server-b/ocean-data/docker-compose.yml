@@ -1,0 +1,376 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports: ["127.0.0.1:2181:2181"]
+    networks: [ocean-net-data]
+
+  # 🔄 카프카 브로커 1 (리더 브로커)
+  kafka1:
+    image: confluentinc/cp-kafka:7.6.1
+    restart: unless-stopped
+    depends_on: [zookeeper]
+    hostname: kafka1
+    container_name: kafka1
+    ports: ["9092:9092"]   # 브로커1 접근용 (모든 인터페이스)
+    environment:
+      # 브로커 1 기본 설정
+      KAFKA_BROKER_ID: 1                                    # 브로커 고유 ID (첫 번째 브로커)
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181               # 주키퍼 연결 정보
+
+      # 네트워크 리스너 설정
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092              # 바인딩할 주소
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:29092,EXTERNAL://${HOST_IP}:9092  # 클라이언트에 알릴 주소
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT     # 보안 프로토콜 매핑
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL                                      # 브로커간 통신용 리스너
+
+      # 🔄 2배 저장을 위한 복제 설정
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2                  # 모든 토픽 2배 복제
+      KAFKA_MIN_INSYNC_REPLICAS: 1                         # 최소 1개 복제본 동기화 필요
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2            # __consumer_offsets 토픽도 2배 복제
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2    # 트랜잭션 로그도 2배 복제
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1               # 트랜잭션 로그 최소 ISR
+
+      # 로그 분산 저장 설정
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true                # 자동 토픽 생성 활성화
+      KAFKA_NUM_PARTITIONS: 4                              # 기본 파티션 수 (분산 처리용)
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000         # 브로커 2개 대기 시간
+
+      KAFKA_LOG_DIRS: /var/lib/kafka/data                  # 로그 저장 디렉토리
+
+      # JMX 메트릭 설정 (비활성화)
+      # KAFKA_JMX_HOSTNAME: kafka1
+      # KAFKA_JMX_PORT: 9998
+      # KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent.jar=7071:/opt/jmx-exporter.yml"
+    volumes:
+      - ./data/kafka1:/var/lib/kafka/data                  # 브로커1 전용 데이터 디렉토리
+      # - ./config/jmx-exporter.yml:/opt/jmx-exporter.yml:ro
+      # - ./jmx_prometheus_javaagent.jar:/opt/jmx_prometheus_javaagent.jar:ro
+    networks: [ocean-net-data]
+
+  # 🔄 카프카 브로커 2 (팔로워 브로커)
+  kafka2:
+    image: confluentinc/cp-kafka:7.6.1
+    restart: unless-stopped
+    depends_on: [zookeeper]
+    hostname: kafka2
+    container_name: kafka2
+    ports: ["9093:9092"]   # 브로커2 접근용 (모든 인터페이스)
+    environment:
+      # 브로커 2 기본 설정
+      KAFKA_BROKER_ID: 2                                    # 브로커 고유 ID (두 번째 브로커)
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181               # 주키퍼 연결 정보
+
+      # 네트워크 리스너 설정
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092              # 바인딩할 주소
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:29092,EXTERNAL://${HOST_IP}:9093  # 클라이언트에 알릴 주소 (다른 포트)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT     # 보안 프로토콜 매핑
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL                                      # 브로커간 통신용 리스너
+
+      # 🔄 브로커1과 동일한 복제 설정 (필수!)
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2                  # 모든 토픽 2배 복제
+      KAFKA_MIN_INSYNC_REPLICAS: 1                         # 최소 1개 복제본 동기화 필요
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2            # __consumer_offsets 토픽도 2배 복제
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2    # 트랜잭션 로그도 2배 복제
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1               # 트랜잭션 로그 최소 ISR
+
+      # 로그 분산 저장 설정 (브로커1과 동일)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true                # 자동 토픽 생성 활성화
+      KAFKA_NUM_PARTITIONS: 4                              # 기본 파티션 수 (분산 처리용)
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000         # 브로커 2개 대기 시간
+
+      KAFKA_LOG_DIRS: /var/lib/kafka/data                  # 로그 저장 디렉토리
+
+      # JMX 메트릭 설정 (비활성화)
+      # KAFKA_JMX_HOSTNAME: kafka2
+      # KAFKA_JMX_PORT: 9999
+      # KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent.jar=7072:/opt/jmx-exporter.yml"
+    volumes:
+      - ./data/kafka2:/var/lib/kafka/data                  # 브로커2 전용 데이터 디렉토리
+      # - ./config/jmx-exporter.yml:/opt/jmx-exporter.yml:ro
+      # - ./jmx_prometheus_javaagent.jar:/opt/jmx_prometheus_javaagent.jar:ro
+    networks: [ocean-net-data]
+
+  # 🔄 MinIO 분산 모드 설정 (4개 노드 권장)
+  minio1:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio1
+    container_name: minio1
+    environment:
+      # MinIO 분산 클러스터 인증 설정
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}           # 관리자 사용자명 (모든 노드 동일해야 함)
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}   # 관리자 비밀번호 (모든 노드 동일해야 함)
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_PROMETHEUS_URL: http://prometheus:9090  # 프로메테우스 서버 URL
+
+      # 📁 분산 모드 필수 설정
+      # MINIO_DISTRIBUTED_MODE_ENABLED: yes          # 분산 모드 활성화 (자동 감지됨)
+      # MINIO_DISTRIBUTED_NODES: 4                   # 총 노드 수 (erasure coding용)
+
+      # 📁 분산 모드 추가 설정
+      # MINIO_REGION_NAME: us-east-1                 # 기본 리전 설정 (모든 노드 동일)
+      # MINIO_BROWSER: on                            # 웹 브라우저 인터페이스 활성화
+      # MINIO_DOMAIN: minio.local                    # 도메인 설정
+      # MINIO_SERVER_URL: http://minio1:9000         # 이 노드의 서버 URL
+
+      # 📁 분산 모드 고급 설정
+      # MINIO_ERASURE_SET_DRIVE_COUNT: 4             # Erasure Set당 드라이브 수
+      # MINIO_STORAGE_CLASS_STANDARD: EC:2           # 표준 스토리지 클래스 (2 패리티)
+      # MINIO_STORAGE_CLASS_RRS: EC:1                # Reduced Redundancy (1 패리티)
+    # 🔄 분산 모드 command: 모든 노드의 엔드포인트 지정
+    command: server http://minio{1...4}:9000/data --console-address ":9001"
+    ports:
+      - "8180:9000"  # S3 API (직접 접근)
+      - "8181:9001"  # 웹 콘솔 (직접 접근)
+    volumes:
+      - ./data/minio1:/data    # 노드1 전용 데이터 디렉토리
+    networks: [ocean-net-data]
+
+  minio2:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio2
+    container_name: minio2
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}           # 노드1과 동일한 인증 정보
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_PROMETHEUS_URL: http://prometheus:9090
+    command: server http://minio{1...4}:9000/data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9002:9000"  # S3 API (다른 포트)
+      - "127.0.0.1:9003:9001"  # 웹 콘솔 (다른 포트)
+    volumes:
+      - ./data/minio2:/data    # 노드2 전용 데이터 디렉토리
+    networks: [ocean-net-data]
+
+  minio3:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio3
+    container_name: minio3
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_PROMETHEUS_URL: http://prometheus:9090
+    command: server http://minio{1...4}:9000/data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9004:9000"  # S3 API (다른 포트)
+      - "127.0.0.1:9005:9001"  # 웹 콘솔 (다른 포트)
+    volumes:
+      - ./data/minio3:/data    # 노드3 전용 데이터 디렉토리
+    networks: [ocean-net-data]
+
+  minio4:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio4
+    container_name: minio4
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_PROMETHEUS_URL: http://prometheus:9090
+    command: server http://minio{1...4}:9000/data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9006:9000"  # S3 API (다른 포트)
+      - "127.0.0.1:9007:9001"  # 웹 콘솔 (다른 포트)
+    volumes:
+      - ./data/minio4:/data    # 노드4 전용 데이터 디렉토리
+    networks: [ocean-net-data]
+
+  # 🔄 MinIO 로드밸런서 (HAProxy 또는 nginx 사용 권장)
+  # minio-lb:
+  #   image: haproxy:latest
+  #   container_name: minio-lb
+  #   restart: unless-stopped
+  #   ports:
+  #     - "127.0.0.1:9008:9000"  # 통합 S3 API 엔드포인트
+  #   volumes:
+  #     - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  # 로드밸런서 설정
+  #   networks: [ocean-net-data]
+  #   depends_on: [minio1, minio2, minio3, minio4]
+
+  # 🔄 카프카 싱크 커넥터 (MinIO 자동 전송)
+  kafka-sink:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka-sink
+    restart: unless-stopped
+    depends_on: [kafka1, kafka2, minio1, minio2]
+    hostname: kafka-sink
+    container_name: kafka-sink
+    ports: ["127.0.0.1:8084:8083"]
+    environment:
+      # 카프카 싱크 커넥터 설정 (2개 브로커 연결)
+      CONNECT_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29092
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-sink
+      CONNECT_GROUP_ID: kafka-sink-cluster
+
+      # 카프카 싱크용 내부 토픽 (기존 토픽 재사용)
+      CONNECT_CONFIG_STORAGE_TOPIC: _log-distributor-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: _log-distributor-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: _log-distributor-status
+
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+
+      # JSON 포맷 (로그 데이터용)
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: false
+
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+
+      # 🔄 커넥터 자동 생성 설정
+      CONNECT_CONNECTOR_CLIENT_CONFIG_OVERRIDE_POLICY: All
+    volumes:
+      - ./config/connectors:/etc/kafka-connect/connectors  # 커넥터 설정 파일들 마운트
+    networks: [ocean-net-data]
+
+  # 📊 로그 분산 처리 모니터링
+  # log-monitor:
+  #   image: prom/prometheus:latest
+  #   container_name: log-monitor
+  #   restart: unless-stopped
+  #   ports: ["127.0.0.1:9090:9090"]
+  #   volumes:
+  #     - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   networks: [ocean-net-data]
+  #   # 📁 모니터링 대상:
+  #   # - 카프카 파티션별 메시지 수
+  #   # - MinIO 서버별 저장량
+  #   # - 커넥터 처리 속도
+
+  # 📌 실제 분산 환경에서는 각 노드를 다른 물리 서버에 배치
+  # 예시: docker-compose-minio-node1.yml, docker-compose-minio-node2.yml 등으로 분리
+  # command 예시: server http://server1:9000/data http://server2:9000/data http://server3:9000/data http://server4:9000/data
+
+  # 🚀 Kafka 초기화 서비스
+  kafka-init:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka-init
+    depends_on: [kafka1, kafka2]
+    volumes:
+      - ./config/init-kafka.sh:/opt/init-kafka.sh
+    command: ["bash", "/opt/init-kafka.sh"]
+    networks: [ocean-net-data]
+    restart: "no"  # 한 번만 실행
+
+  # ✅ kafka-sink-connector 제거됨 (사용하지 않음)
+  # 현재 kafka-sink 컨테이너만 사용 중
+
+  spark-master:
+    image: bitnami/spark:3.5.1
+    container_name: spark-master
+    restart: unless-stopped
+    environment:
+      # 스파크 마스터 설정
+      SPARK_MODE: master                            # 마스터 모드로 실행
+
+      # 📁 추가 가능한 마스터 설정
+      # SPARK_MASTER_HOST: spark-master              # 마스터 호스트명 (기본값: 컨테이너명)
+      # SPARK_MASTER_PORT: 7077                      # 마스터 포트 (기본값 7077)
+      # SPARK_MASTER_WEBUI_PORT: 8080                # 웹 UI 포트 (기본값 8080)
+      # SPARK_MASTER_OPTS: "-Dspark.deploy.recoveryMode=ZOOKEEPER"  # 고가용성 설정
+
+      # 📁 추가 가능한 리소스 설정
+      # SPARK_DAEMON_MEMORY: 1G                      # 마스터 데몬 메모리
+      # SPARK_WORKER_TIMEOUT: 60                     # 워커 타임아웃 (초)
+
+      # 📁 추가 가능한 로깅 설정
+      # SPARK_LOG_LEVEL: INFO                        # 로그 레벨 (ERROR, WARN, INFO, DEBUG)
+    ports:
+      - "127.0.0.1:8080:8080"  # 스파크 마스터 웹 UI (로컬)
+      - "7077:7077"            # 스파크 마스터 RPC 포트
+    networks: [ocean-net-data]
+    # 📁 추가 가능한 볼륨 마운트
+    # volumes:
+    #   - ./data/spark-master:/opt/bitnami/spark/logs  # 마스터 로그 저장
+
+  spark-worker:
+    image: bitnami/spark:3.5.1
+    container_name: spark-worker
+    restart: unless-stopped
+    depends_on: [spark-master]
+    environment:
+      # 스파크 워커 설정
+      SPARK_MODE: worker                            # 워커 모드로 실행
+      SPARK_MASTER_URL: spark://spark-master:7077  # 마스터 연결 URL
+      SPARK_WORKER_MEMORY: 2G                      # 워커 메모리 할당
+      SPARK_WORKER_CORES: 2                        # 워커 CPU 코어 수
+
+      # 📁 추가 가능한 워커 설정
+      # SPARK_WORKER_PORT: 8881                      # 워커 포트 (기본값 랜덤)
+      # SPARK_WORKER_WEBUI_PORT: 8081                # 워커 웹 UI 포트
+      # SPARK_WORKER_DIR: /opt/bitnami/spark/work    # 워커 작업 디렉토리
+      # SPARK_WORKER_OPTS: "-Dspark.worker.cleanup.enabled=true"  # 워커 옵션
+
+      # 📁 추가 가능한 실행자 설정
+      # SPARK_EXECUTOR_MEMORY: 1G                    # 실행자 메모리
+      # SPARK_EXECUTOR_CORES: 1                      # 실행자 코어 수
+      # SPARK_EXECUTOR_INSTANCES: 2                  # 실행자 인스턴스 수
+
+      # 📁 추가 가능한 성능 설정
+      # SPARK_DAEMON_MEMORY: 512M                    # 워커 데몬 메모리
+      # SPARK_WORKER_TIMEOUT: 60                     # 워커 응답 타임아웃
+    networks: [ocean-net-data]
+    # 📁 추가 가능한 설정
+    # ports:
+    #   - "127.0.0.1:8081:8081"  # 워커 웹 UI (로컬)
+    # volumes:
+    #   - ./data/spark-worker:/opt/bitnami/spark/work  # 워커 작업 디렉토리
+    #   - ./data/spark-worker-logs:/opt/bitnami/spark/logs  # 워커 로그
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: unless-stopped
+    depends_on: [kafka1, kafka2]
+    ports:
+      - "127.0.0.1:8082:8080"  # Kafka UI 웹 인터페이스 (로컬)
+    environment:
+      # 카프카 클러스터 설정 (2개 브로커)
+      KAFKA_CLUSTERS_0_NAME: local-cluster                                # 클러스터 표시명
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092       # 카프카 브로커 2개 주소
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181                          # 주키퍼 연결 (토픽 관리용)
+
+      # 카프카 커넥트 연동 설정
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect                       # 커넥트 클러스터명
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-sink:8083  # 커넥트 REST API 주소
+
+      # 웹 서버 설정
+      SERVER_SERVLET_CONTEXT_PATH: /kafka-ui                              # URL 컨텍스트 패스
+
+      # 📁 추가 가능한 UI 설정
+      # KAFKA_CLUSTERS_0_READONLY: false                                  # 읽기 전용 모드 (기본값 false)
+      # KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: PLAINTEXT          # 보안 프로토콜
+
+      # 📁 추가 가능한 스키마 레지스트리 설정
+      # KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081      # 스키마 레지스트리 주소
+      # KAFKA_CLUSTERS_0_SCHEMANAMETEMPLATE: "%s-value"                   # 스키마 네이밍 템플릿
+
+      # 📁 추가 가능한 KSQL 설정
+      # KAFKA_CLUSTERS_0_KSQLDBSERVER: http://ksqldb:8088                 # KSQL DB 서버 주소
+
+      # 📁 추가 가능한 보안 설정
+      # AUTH_TYPE: LOGIN_FORM                                             # 인증 방식 (DISABLED, LOGIN_FORM, OAUTH2, LDAP)
+      # SPRING_SECURITY_USER_NAME: admin                                  # 기본 사용자명
+      # SPRING_SECURITY_USER_PASSWORD: admin                              # 기본 비밀번호
+
+      # 📁 추가 가능한 메트릭 설정
+      # KAFKA_CLUSTERS_0_METRICS_PORT: 9997                              # JMX 메트릭 포트
+      # MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: true               # 프로메테우스 메트릭 활성화
+    networks: [ocean-net-data]
+
+networks:
+  ocean-net-data:
+    external: true
+

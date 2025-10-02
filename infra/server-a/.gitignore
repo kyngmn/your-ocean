@@ -1,0 +1,38 @@
+# 환경 변수 파일 (민감한 정보 포함)
+.env
+
+
+# SSL 인증서 파일들
+nginx/certs/
+*.pem
+*.key
+*.crt
+
+# Docker 볼륨 데이터 (로컬 데이터)
+prometheus_data/
+grafana_data/
+
+# 로그 파일들
+*.log
+logs/
+
+# 백업 파일들
+*.backup
+*.bak
+
+# 임시 파일들
+*.tmp
+*.swp
+*~
+
+# IDE 설정 파일들
+.idea/
+.vscode/
+*.iml
+
+# OS 생성 파일들
+.DS_Store
+Thumbs.db
+
+# Docker 관련 임시 파일들
+docker-compose.override.yml

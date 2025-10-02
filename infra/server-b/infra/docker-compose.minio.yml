@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # MinIO 분산 클러스터 - Server 2 노드 1
+  minio3:
+    image: minio/minio:latest
+    container_name: server2-minio3
+    ports:
+      - "8085:9000"  # MinIO API
+      - "8186:9001"  # MinIO Console
+    volumes:
+      - minio3_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server
+      http://43.203.252.173:8001/data
+      http://43.203.252.173:8002/data
+      http://3.38.104.215:8085/data
+      http://3.38.104.215:8086/data
+      --console-address ":9001"
+    networks:
+      - minio-distributed
+    restart: always
+
+  # MinIO 분산 클러스터 - Server 2 노드 2
+  minio4:
+    image: minio/minio:latest
+    container_name: server2-minio4
+    ports:
+      - "8086:9000"  # MinIO API
+      - "8187:9001"  # MinIO Console
+    volumes:
+      - minio4_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server
+      http://43.203.252.173:8001/data
+      http://43.203.252.173:8002/data
+      http://3.38.104.215:8085/data
+      http://3.38.104.215:8086/data
+      --console-address ":9001"
+    networks:
+      - minio-distributed
+    restart: always
+
+# 데이터 볼륨 정의
+volumes:
+  minio3_data:
+    driver: local
+  minio4_data:
+    driver: local
+
+# 네트워크 정의
+networks:
+  minio-distributed:
+    driver: bridge

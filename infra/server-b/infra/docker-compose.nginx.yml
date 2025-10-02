@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # nginx SSL 프록시
+  nginx-ssl:
+    image: nginx:alpine
+    container_name: data-nginx-ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./nginx/certs:/etc/letsencrypt:ro
+      - ./nginx/html:/var/www/certbot:rw
+    networks:
+      - ocean-net-data
+    restart: always
+    depends_on:
+      - certbot
+
+  # 와일드카드 SSL 인증서 발급
+  certbot:
+    image: certbot/certbot:latest
+    container_name: data-certbot
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt:rw
+      - ./nginx/html:/var/www/certbot:rw
+    # 와일드카드 인증서 발급 (DNS 인증 필요)
+    # 실제 실행 시에는 DNS API 토큰이 필요합니다
+    command: certonly --manual --preferred-challenges dns --email parkdanilssafy@gmail.com --agree-tos --no-eff-email -d "*.myocean.cloud" -d "myocean.cloud"
+
+# 기존 네트워크 사용
+networks:
+  ocean-net-data:
+    external: true
+
+# 볼륨 정의
+volumes:
+  nginx_certs:
+    driver: local

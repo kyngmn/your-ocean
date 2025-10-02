@@ -1,0 +1,27 @@
+rules:
+  # Kafka Broker Metrics
+  - pattern: kafka.server<type=(.+), name=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+
+  # Kafka Topic Metrics
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=(.+), topic=(.+)><>Count
+    name: kafka_broker_topic_$1
+    labels:
+      topic: $2
+    type: COUNTER
+
+  # Kafka Log Size
+  - pattern: kafka.log<type=Size, name=Size, topic=(.+), partition=(.+)><>Value
+    name: kafka_log_size
+    labels:
+      topic: $1
+      partition: $2
+    type: GAUGE
+
+  # Kafka Consumer Group Lag
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+)><>(.+)
+    name: kafka_consumer_$2
+    labels:
+      client_id: $1
+    type: GAUGE

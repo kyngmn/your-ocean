@@ -1,0 +1,161 @@
+# 🌐 실제 다중 서버 MinIO 분산 설정 예시
+# 각 서버에서 실행할 docker-compose 파일들
+
+# ===============================================
+# 서버1 (192.168.1.101) - docker-compose-node1.yml
+# ===============================================
+version: '3.8'
+services:
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio-node1
+    container_name: minio-node1
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+
+      # 분산 모드 설정
+      MINIO_REGION_NAME: us-east-1
+      MINIO_STORAGE_CLASS_STANDARD: "EC:2"     # 2개 패리티 (4노드 중 2개 장애 허용)
+      MINIO_STORAGE_CLASS_RRS: "EC:1"          # 1개 패리티 (4노드 중 1개 장애 허용)
+
+    # 🔄 분산 command: 모든 서버의 실제 IP/도메인 지정
+    command: >
+      server
+      http://192.168.1.101:9000/data1 http://192.168.1.101:9000/data2
+      http://192.168.1.102:9000/data1 http://192.168.1.102:9000/data2
+      http://192.168.1.103:9000/data1 http://192.168.1.103:9000/data2
+      http://192.168.1.104:9000/data1 http://192.168.1.104:9000/data2
+      --console-address ":9001"
+
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # 웹 콘솔
+
+    volumes:
+      - /mnt/disk1:/data1   # 첫 번째 디스크
+      - /mnt/disk2:/data2   # 두 번째 디스크 (권장: 서로 다른 물리 디스크)
+
+    networks:
+      - minio-distributed
+
+networks:
+  minio-distributed:
+    driver: bridge
+
+---
+
+# ===============================================
+# 서버2 (192.168.1.102) - docker-compose-node2.yml
+# ===============================================
+version: '3.8'
+services:
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio-node2
+    container_name: minio-node2
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}      # 모든 노드 동일
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_REGION_NAME: us-east-1            # 모든 노드 동일
+      MINIO_STORAGE_CLASS_STANDARD: "EC:2"
+      MINIO_STORAGE_CLASS_RRS: "EC:1"
+
+    command: >
+      server
+      http://192.168.1.101:9000/data1 http://192.168.1.101:9000/data2
+      http://192.168.1.102:9000/data1 http://192.168.1.102:9000/data2
+      http://192.168.1.103:9000/data1 http://192.168.1.103:9000/data2
+      http://192.168.1.104:9000/data1 http://192.168.1.104:9000/data2
+      --console-address ":9001"
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    volumes:
+      - /mnt/disk1:/data1
+      - /mnt/disk2:/data2
+
+    networks:
+      - minio-distributed
+
+networks:
+  minio-distributed:
+    driver: bridge
+
+---
+
+# ===============================================
+# 로드밸런서 설정 (HAProxy) - 별도 서버 또는 서버1에 설치
+# ===============================================
+# haproxy.cfg 파일 내용:
+
+global
+    daemon
+    maxconn 4096
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+# MinIO S3 API 로드밸런싱
+frontend minio_s3_frontend
+    bind *:9000
+    default_backend minio_s3_backend
+
+backend minio_s3_backend
+    balance roundrobin
+    server minio1 192.168.1.101:9000 check
+    server minio2 192.168.1.102:9000 check
+    server minio3 192.168.1.103:9000 check
+    server minio4 192.168.1.104:9000 check
+
+# MinIO Console 로드밸런싱
+frontend minio_console_frontend
+    bind *:9001
+    default_backend minio_console_backend
+
+backend minio_console_backend
+    balance roundrobin
+    server minio1 192.168.1.101:9001 check
+    server minio2 192.168.1.102:9001 check
+    server minio3 192.168.1.103:9001 check
+    server minio4 192.168.1.104:9001 check
+
+---
+
+# ===============================================
+# 배포 스크립트 예시
+# ===============================================
+
+#!/bin/bash
+# deploy-minio-cluster.sh
+
+SERVERS=("192.168.1.101" "192.168.1.102" "192.168.1.103" "192.168.1.104")
+NODE_CONFIGS=("node1" "node2" "node3" "node4")
+
+# 각 서버에 설정 배포
+for i in "${!SERVERS[@]}"; do
+    SERVER="${SERVERS[$i]}"
+    NODE="${NODE_CONFIGS[$i]}"
+
+    echo "🚀 Deploying to server: $SERVER (${NODE})"
+
+    # 설정 파일 복사
+    scp docker-compose-${NODE}.yml $SERVER:~/minio/
+    scp .env $SERVER:~/minio/
+
+    # 원격 실행
+    ssh $SERVER "cd ~/minio && docker-compose -f docker-compose-${NODE}.yml up -d"
+done
+
+echo "✅ MinIO 분산 클러스터 배포 완료!"
+echo "🌐 S3 API: http://load-balancer:9000"
+echo "🖥️ Console: http://load-balancer:9001"

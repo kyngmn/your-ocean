@@ -1,0 +1,14 @@
+# 📊 JMX Exporter가 포함된 Kafka 이미지
+FROM confluentinc/cp-kafka:7.6.1
+
+# root 권한으로 JMX Prometheus Java Agent 다운로드
+USER root
+RUN curl -L -o /opt/jmx_prometheus_javaagent.jar \
+    https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.20.0/jmx_prometheus_javaagent-0.20.0.jar && \
+    chmod 644 /opt/jmx_prometheus_javaagent.jar
+
+# 기본 사용자로 복원
+USER appuser
+
+# 기본 엔트리포인트 유지
+CMD ["/etc/confluent/docker/run"]

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  big5-reasoning-app:
+    build: .
+    ports:
+      - "8501:8501"  # Streamlit 웹 인터페이스
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TOKENIZERS_PARALLELISM=false  # 멀티프로세싱 오류 방지
+    env_file:
+      - .env  # GMS API 키 로드
+    volumes:
+      # 모델 캐시를 위한 볼륨
+      - huggingface_cache:/root/.cache/huggingface
+      # 로그 볼륨 (선택사항)
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s  # 모델 로딩 시간 고려
+    deploy:
+      resources:
+        limits:
+          memory: 4G  # 메모리 제한
+        reservations:
+          memory: 2G
+
+volumes:
+  huggingface_cache:

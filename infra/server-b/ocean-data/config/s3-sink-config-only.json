@@ -1,0 +1,26 @@
+{
+  "connector.class": "io.confluent.connect.s3.S3SinkConnector",
+  "tasks.max": "4",
+  "topics": "s3-test-logs",
+
+  "s3.bucket.name": "logs-server1",
+  "s3.region": "us-east-1",
+  "store.url": "http://minio1:9000",
+  "aws.access.key.id": "hellopong",
+  "aws.secret.access.key": "hellopong303",
+  "s3.path.style.access.enabled": "true",
+  "storage.class": "io.confluent.connect.s3.storage.S3Storage",
+
+  "flush.size": "3",
+  "rotate.interval.ms": "10000",
+
+  "s3.part.size": "5242880",
+  "s3.compression.type": "none",
+
+  "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
+
+  "format.class": "io.confluent.connect.s3.format.json.JsonFormat",
+
+  "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+  "value.converter": "org.apache.kafka.connect.storage.StringConverter"
+}

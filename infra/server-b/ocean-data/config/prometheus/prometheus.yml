@@ -1,0 +1,51 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Kafka 브로커 메트릭 (JMX Exporter)
+  - job_name: 'kafka-broker'
+    static_configs:
+      - targets:
+          - 'kafka1:7071'
+          - 'kafka2:7072'
+    scrape_interval: 10s
+    metrics_path: /metrics
+
+  # Kafka Connect 메트릭 (JMX)
+  - job_name: 'kafka-connect'
+    static_configs:
+      - targets: ['kafka-sink:8083']
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # MinIO 메트릭
+  - job_name: 'minio'
+    static_configs:
+      - targets:
+          - 'minio1:9000'
+          - 'minio2:9000'
+          - 'minio3:9000'
+          - 'minio4:9000'
+    metrics_path: /minio/v2/metrics/cluster
+    scrape_interval: 30s
+
+  # MinIO 노드별 메트릭
+  - job_name: 'minio-node'
+    static_configs:
+      - targets:
+          - 'minio1:9000'
+          - 'minio2:9000'
+          - 'minio3:9000'
+          - 'minio4:9000'
+    metrics_path: /minio/v2/metrics/node
+    scrape_interval: 30s

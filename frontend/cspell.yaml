@@ -1,0 +1,31 @@
+# 스펠링 검사 도구 설정 파일
+version: "0.2"
+language: en
+ignorePaths:
+  - node_modules
+  - dist
+  - .next
+  - coverage
+  - package-lock.json
+
+words: # 추가로 허용할 단어
+  - Nextjs
+  - Tailwindcss
+  - clsx
+  - eslint
+  - tsconfig
+  - lottiefiles
+  - dotlottie
+  - commitlint
+  - codegen
+  - yourocean
+  - NOGO
+  - kysely
+  - kakao
+  - Kakao
+  - partialize
+  - zustand
+
+flagWords: # 반드시 경고할 단어
+  - hte
+  - teh

@@ -1,0 +1,11 @@
+# 🔄 S3 플러그인이 포함된 Kafka Connect 이미지
+FROM confluentinc/cp-kafka-connect:7.6.1
+
+# S3 Sink Connector 플러그인 설치
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-s3:latest
+
+# 플러그인 경로 확인
+RUN echo "📦 설치된 플러그인:" && ls -la /usr/share/confluent-hub-components/
+
+# 기본 엔트리포인트 유지
+CMD ["/etc/confluent/docker/run"]

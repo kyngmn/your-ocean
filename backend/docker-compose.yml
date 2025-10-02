@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: myocean-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ocean-net
+    env_file:
+      - .env
+
+  redis:
+    image: redis:7-alpine
+    container_name: myocean-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    env_file:
+      - .env
+
+  minio:
+    image: minio/minio:latest
+    container_name: myocean-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - ocean-net
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio-setup:
+    image: minio/mc:latest
+    container_name: myocean-minio-setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - ocean-net
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://myocean-minio:9000 minioadmin minioadmin;
+      mc mb myminio/myocean-profiles --ignore-existing;
+      mc anonymous set public myminio/myocean-profiles;
+      exit 0;
+      "
+
+volumes:
+  postgres_data:
+  minio_data:
+
+networks:
+  ocean-net:
+    external: true

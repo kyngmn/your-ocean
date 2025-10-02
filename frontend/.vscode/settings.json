@@ -1,0 +1,57 @@
+{
+  // ===== ESLint를 기본 포맷터로 설정 =====
+  "editor.formatOnSave": false, // 기본 formatOnSave 비활성화
+
+  // 파일별 포맷터 지정
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false
+  },
+
+  // JSON과 CSS는 기본 포맷터 사용
+  "[json]": { "editor.defaultFormatter": "vscode.json-language-features" },
+  "[css]": { "editor.defaultFormatter": "vscode.css-language-features" },
+
+  // ESLint 확장에서 Flat Config 사용 활성화
+  "eslint.useFlatConfig": true,
+
+  // 저장 시 자동 고치기
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // 워크스페이스 루트에서 ESLint 실행하도록 지정
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  // ===== ESLint =====
+  "eslint.enable": true,
+  "eslint.run": "onType", // 입력할 때 즉시 검사
+  "eslint.format.enable": true, // ESLint 포맷터 활성화
+  "eslint.validate": [
+    // 어떤 파일을 ESLint로 검사할지 지정
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // ===== 기타 일관성 =====
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}

@@ -1,0 +1,212 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'blue-green-demo'
+        BLUE_PORT = '3001'
+        GREEN_PORT = '3002'
+        PROXY_PORT = '3000'
+        DOCKER_IMAGE = "${APP_NAME}"
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('준비') {
+            steps {
+                echo '🚀 블루-그린 배포 시작!'
+                echo "빌드 번호: ${BUILD_NUMBER}"
+
+                script {
+                    // 현재 활성 환경 확인
+                    try {
+                        def blueRunning = sh(
+                            script: "docker ps --filter name=${APP_NAME}-blue --filter status=running -q",
+                            returnStdout: true
+                        ).trim()
+
+                        def greenRunning = sh(
+                            script: "docker ps --filter name=${APP_NAME}-green --filter status=running -q",
+                            returnStdout: true
+                        ).trim()
+
+                        if (blueRunning && !greenRunning) {
+                            env.CURRENT_ENV = 'blue'
+                            env.TARGET_ENV = 'green'
+                            env.TARGET_PORT = env.GREEN_PORT
+                            env.CURRENT_PORT = env.BLUE_PORT
+                        } else if (greenRunning && !blueRunning) {
+                            env.CURRENT_ENV = 'green'
+                            env.TARGET_ENV = 'blue'
+                            env.TARGET_PORT = env.BLUE_PORT
+                            env.CURRENT_PORT = env.GREEN_PORT
+                        } else {
+                            // 처음 배포거나 둘 다 없는 경우
+                            env.CURRENT_ENV = 'none'
+                            env.TARGET_ENV = 'blue'
+                            env.TARGET_PORT = env.BLUE_PORT
+                            env.CURRENT_PORT = 'none'
+                        }
+
+                        echo "현재 환경: ${env.CURRENT_ENV}"
+                        echo "배포 대상: ${env.TARGET_ENV}"
+                        echo "대상 포트: ${env.TARGET_PORT}"
+
+                    } catch (Exception e) {
+                        echo "환경 확인 중 오류: ${e.getMessage()}"
+                        env.CURRENT_ENV = 'none'
+                        env.TARGET_ENV = 'blue'
+                        env.TARGET_PORT = env.BLUE_PORT
+                    }
+                }
+            }
+        }
+
+        stage('빌드') {
+            steps {
+                echo "🔨 Docker 이미지 빌드 중..."
+                script {
+                    // Docker 이미지 빌드
+                    sh """
+                        docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
+                        docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
+                    """
+                }
+                echo "✅ 빌드 완료!"
+            }
+        }
+
+        stage('배포') {
+            steps {
+                echo "🚢 ${env.TARGET_ENV} 환경에 배포 중..."
+                script {
+                    // 대상 환경의 기존 컨테이너 정리
+                    sh """
+                        docker stop ${APP_NAME}-${env.TARGET_ENV} || true
+                        docker rm ${APP_NAME}-${env.TARGET_ENV} || true
+                    """
+
+                    // 새 컨테이너 실행
+                    sh """
+                        docker run -d \\
+                            --name ${APP_NAME}-${env.TARGET_ENV} \\
+                            --network ocean-net \\
+                            -p ${env.TARGET_PORT}:3000 \\
+                            -e ENVIRONMENT=${env.TARGET_ENV} \\
+                            -e VERSION=${BUILD_NUMBER} \\
+                            -e PORT=3000 \\
+                            ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                    """
+                }
+                echo "✅ ${env.TARGET_ENV} 환경 배포 완료!"
+            }
+        }
+
+        stage('헬스체크') {
+            steps {
+                echo "🏥 헬스체크 중..."
+                script {
+                    def maxRetries = 30
+                    def retryCount = 0
+                    def healthy = false
+
+                    while (retryCount < maxRetries && !healthy) {
+                        try {
+                            def response = sh(
+                                script: "curl -s -o /dev/null -w '%{http_code}' http://localhost:${env.TARGET_PORT}/health",
+                                returnStdout: true
+                            ).trim()
+
+                            if (response == '200') {
+                                healthy = true
+                                echo "✅ 헬스체크 성공!"
+                            } else {
+                                echo "⏳ 헬스체크 대기 중... (${retryCount + 1}/${maxRetries})"
+                                sleep(5)
+                                retryCount++
+                            }
+                        } catch (Exception e) {
+                            echo "⏳ 헬스체크 대기 중... (${retryCount + 1}/${maxRetries})"
+                            sleep(5)
+                            retryCount++
+                        }
+                    }
+
+                    if (!healthy) {
+                        error("❌ 헬스체크 실패! 배포를 중단합니다.")
+                    }
+                }
+            }
+        }
+
+        stage('트래픽 전환') {
+            steps {
+                echo "🔄 트래픽 전환 중..."
+                script {
+                    // 실제 nginx 설정 파일 수정
+                    sh """
+                        # 현재 nginx 설정에서 blue-green-demo 부분을 새 환경으로 변경
+                        sed -i 's/proxy_pass http:\\/\\/blue-green-demo-[^:]*:3000/proxy_pass http:\\/\\/blue-green-demo-${env.TARGET_ENV}:3000/' /home/ubuntu/S13P21A303/infra/nginx/conf.d/myocean_server.conf
+
+                        # nginx 설정 리로드
+                        docker exec web-nginx nginx -s reload
+
+                        echo "✅ Nginx 설정이 ${env.TARGET_ENV}로 업데이트되었습니다!"
+                    """
+                }
+                echo "✅ 트래픽이 ${env.TARGET_ENV} 환경으로 전환되었습니다!"
+            }
+        }
+
+        stage('이전 환경 정리') {
+            when {
+                expression { env.CURRENT_ENV != 'none' }
+            }
+            steps {
+                echo "🧹 이전 환경 정리 중..."
+                script {
+                    // 30초 대기 후 이전 환경 정리
+                    echo "30초 후 ${env.CURRENT_ENV} 환경을 정리합니다..."
+                    sleep(30)
+
+                    sh """
+                        docker stop ${APP_NAME}-${env.CURRENT_ENV} || true
+                        docker rm ${APP_NAME}-${env.CURRENT_ENV} || true
+                    """
+                }
+                echo "✅ 이전 환경 정리 완료!"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo """
+🎉 블루-그린 배포 성공!
+📊 배포 정보:
+   - 버전: ${BUILD_NUMBER}
+   - 환경: ${env.TARGET_ENV}
+   - 포트: ${env.TARGET_PORT}
+   - 프록시: http://localhost:${PROXY_PORT}
+"""
+        }
+        failure {
+            echo "❌ 블루-그린 배포 실패!"
+            script {
+                // 실패 시 롤백
+                if (env.CURRENT_ENV != 'none') {
+                    echo "🔄 롤백 중..."
+                    sh """
+                        docker stop ${APP_NAME}-${env.TARGET_ENV} || true
+                        docker rm ${APP_NAME}-${env.TARGET_ENV} || true
+                    """
+                }
+            }
+        }
+        always {
+            echo "🧹 정리 중..."
+            sh """
+                docker image prune -f
+            """
+        }
+    }
+}

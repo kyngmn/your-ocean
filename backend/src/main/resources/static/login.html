@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyOcean 로그인</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            min-width: 400px;
+            max-width: 450px;
+        }
+        h1 {
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 2rem;
+        }
+        .subtitle {
+            color: #4a5568;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+        }
+        .oauth-btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            margin: 12px 0;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .oauth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .google-btn {
+            background: linear-gradient(135deg, #ea4335 0%, #d33b2c 100%);
+        }
+        .google-btn:hover {
+            background: linear-gradient(135deg, #d33b2c 0%, #b52d20 100%);
+        }
+        .api-section {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border: 2px dashed #cbd5e0;
+        }
+        .api-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .api-input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        .api-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .api-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        .info-text {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+        .response-area {
+            margin-top: 1rem;
+            padding: 12px;
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .url-display {
+            background: #edf2f7;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #4a5568;
+            margin: 8px 0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🌊 MyOcean</h1>
+        <p class="subtitle">바다처럼 넓은 감정의 세계</p>
+
+        <div class="section">
+            <div class="section-title">🔐 소셜 로그인</div>
+            <button class="oauth-btn google-btn" onclick="startGoogleOAuth()">
+                🔑 Google로 로그인/회원가입
+            </button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🔧 개발자 테스트</div>
+            <div class="api-section">
+                <div style="font-weight: 600; margin-bottom: 1rem; color: #2d3748;">API 테스트</div>
+
+                <button class="api-btn" onclick="getLoginUrl()" style="width: 100%; margin-bottom: 12px;">
+                    1️⃣ Google 로그인 URL 가져오기
+                </button>
+
+                <div class="url-display" id="loginUrlDisplay" style="display: none;"></div>
+
+                <input type="text" id="authCode" class="api-input" placeholder="2️⃣ Google OAuth 완료 후 받은 authorization code 입력">
+
+                <button class="api-btn" onclick="processOAuth()" style="width: 100%;">
+                    3️⃣ 자동 로그인/회원가입 처리
+                </button>
+
+                <div class="response-area" id="responseArea"></div>
+
+                <div class="info-text">
+                    <strong>사용법:</strong><br>
+                    1. "Google 로그인 URL 가져오기" 버튼 클릭<br>
+                    2. 표시된 URL로 이동하여 Google 로그인<br>
+                    3. 리다이렉트 URL에서 code 파라미터 복사<br>
+                    4. code 입력 후 "자동 로그인/회원가입 처리" 클릭
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://be.myocean.cloud/api/v1/auth';
+
+        async function startGoogleOAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/google/login`);
+                const data = await response.json();
+
+                if (data.loginUrl) {
+                    window.open(data.loginUrl, '_blank');
+                } else {
+                    alert('로그인 URL을 가져오는데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        async function getLoginUrl() {
+            try {
+                const response = await fetch(`${API_BASE}/google/login`);
+                const data = await response.json();
+
+                if (data.loginUrl) {
+                    const urlDisplay = document.getElementById('loginUrlDisplay');
+                    urlDisplay.textContent = data.loginUrl;
+                    urlDisplay.style.display = 'block';
+
+                    showResponse('✅ Google 로그인 URL 생성 완료!\\n' + JSON.stringify(data, null, 2));
+                } else {
+                    showResponse('❌ 로그인 URL 생성 실패');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showResponse('❌ 오류 발생: ' + error.message);
+            }
+        }
+
+        async function processOAuth() {
+            const authCode = document.getElementById('authCode').value.trim();
+
+            if (!authCode) {
+                alert('Authorization code를 입력해주세요.');
+                return;
+            }
+
+            try {
+                showResponse('⏳ 처리 중...');
+
+                const response = await fetch(`${API_BASE}/google/oauth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include', // 쿠키 포함
+                    body: JSON.stringify({
+                        code: authCode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResponse('🎉 로그인/회원가입 성공!\\n' + JSON.stringify(data, null, 2) + '\\n\\n✅ JWT 토큰이 쿠키로 저장되었습니다.');
+
+                    // 성공 시 페이지 새로고침하거나 다른 페이지로 이동
+                    setTimeout(() => {
+                        alert('로그인이 완료되었습니다! 쿠키에 토큰이 저장되었습니다.');
+                    }, 1000);
+                } else {
+                    showResponse('❌ 처리 실패:\\n' + JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showResponse('❌ 오류 발생: ' + error.message);
+            }
+        }
+
+        function showResponse(text) {
+            const responseArea = document.getElementById('responseArea');
+            responseArea.textContent = text;
+            responseArea.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

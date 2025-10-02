@@ -1,0 +1,115 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP 서비스용
+      - "443:443"    # HTTPS 서비스용
+      - "9094:9094"  # Kafka 프록시용
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf  # 메인 nginx 설정
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro        # 가상 호스트 설정들
+      - ./nginx/html:/usr/share/nginx/html:ro      # 정적 파일
+      - ./nginx/certs:/etc/letsencrypt:ro          # SSL 인증서
+      - ./nginx/html:/var/www/certbot:rw           # certbot webroot
+    networks:
+      - ocean-net-data
+    depends_on:
+      - certbot
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/html:/var/www/certbot
+    command: certonly
+      --webroot
+      --webroot-path=/var/www/certbot
+      --email parkdanilssafy@gmail.com
+      --agree-tos
+      --no-eff-email
+      --keep-until-expiring
+      --non-interactive
+      -d "j13a303a.p.ssafy.io"
+    networks:
+      - ocean-net-data
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.external-url=https://j13a303a.p.ssafy.io/prometheus'
+      - '--web.route-prefix=/prometheus'
+    networks:
+      - ocean-net-data
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SERVER_ROOT_URL=https://j13a303a.p.ssafy.io/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    networks:
+      - ocean-net-data
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - ocean-net-data
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    networks:
+      - ocean-net-data
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  ocean-net-data:
+    external: true
+    

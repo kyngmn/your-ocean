@@ -1,0 +1,69 @@
+# 🏢 2서버 MinIO 분산 설정 - 실제 구성 방법
+
+# ===============================================
+# 서버1 (192.168.1.101) 설정
+# ===============================================
+version: '3.8'
+services:
+  minio-node1:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio-node1
+    container_name: minio-node1
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+      # ⚠️ 2서버 분산 모드 제약사항
+      # - 최소 4개 드라이브 필요 (서버당 2개씩)
+      # - 1개 서버 장애시 서비스 중단 (패리티 부족)
+      # - EC:1 (1개 드라이브 장애만 허용)
+      MINIO_STORAGE_CLASS_STANDARD: "EC:1"     # 1개 패리티
+
+    # 🔄 2서버 4드라이브 구성
+    command: >
+      server
+      http://192.168.1.101:9000/data1 http://192.168.1.101:9000/data2
+      http://192.168.1.102:9000/data1 http://192.168.1.102:9000/data2
+      --console-address ":9001"
+
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # 웹 콘솔
+
+    volumes:
+      - /mnt/disk1:/data1   # 서버1 첫 번째 디스크
+      - /mnt/disk2:/data2   # 서버1 두 번째 디스크
+
+---
+
+# ===============================================
+# 서버2 (192.168.1.102) 설정
+# ===============================================
+version: '3.8'
+services:
+  minio-node2:
+    image: minio/minio:latest
+    restart: unless-stopped
+    hostname: minio-node2
+    container_name: minio-node2
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}      # 서버1과 동일
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_STORAGE_CLASS_STANDARD: "EC:1"
+
+    # ⚠️ 동일한 command - 모든 서버의 모든 드라이브 지정
+    command: >
+      server
+      http://192.168.1.101:9000/data1 http://192.168.1.101:9000/data2
+      http://192.168.1.102:9000/data1 http://192.168.1.102:9000/data2
+      --console-address ":9001"
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    volumes:
+      - /mnt/disk1:/data1   # 서버2 첫 번째 디스크
+      - /mnt/disk2:/data2   # 서버2 두 번째 디스크
+

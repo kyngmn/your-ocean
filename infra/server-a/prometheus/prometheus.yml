@@ -1,0 +1,40 @@
+# Prometheus 전역 설정
+global:
+  scrape_interval: 15s      # 메트릭 수집 주기 (기본값: 15초)
+  evaluation_interval: 15s  # 룰 평가 주기
+
+# 알림 관리자 설정 (선택적)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+
+# 룰 파일 로드 (선택적)
+# rule_files:
+#   - "first_rules.yml"
+
+# 메트릭 수집 대상 설정
+scrape_configs:
+  # Prometheus 자기 자신 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter - 시스템 메트릭 수집
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  # cAdvisor - 컨테이너 메트릭 수집
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  # 추가 모니터링 대상들 (필요시 활성화)
+  # - job_name: 'nginx'
+  #   static_configs:
+  #     - targets: ['nginx:80']        # nginx 컨테이너

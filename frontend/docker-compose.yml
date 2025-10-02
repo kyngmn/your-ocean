@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yourocean-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-yourocean}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-yourocean123}
+      POSTGRES_DB: ${DB_NAME:-yourocean_db}
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      # 데이터 영속성을 위한 볼륨
+      - postgres_data:/var/lib/postgresql/data
+      # 초기화 SQL 스크립트 (선택사항)
+      - ./scripts/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-yourocean} -d ${DB_NAME:-yourocean_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - yourocean-network
+
+  # pgAdmin (선택사항 - PostgreSQL 관리 도구)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: yourocean-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@yourocean.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - yourocean-network
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  yourocean-network:
+    driver: bridge
