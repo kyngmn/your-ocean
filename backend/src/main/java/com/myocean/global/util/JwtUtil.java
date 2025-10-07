@@ -15,10 +15,16 @@ public class JwtUtil {
 
     private final SecretKey key;
     private final long expiration;
+    private final long refreshExpiration;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+    public JwtUtil(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long expiration,
+            @Value("${jwt.refresh-expiration}") long refreshExpiration
+    ) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.expiration = expiration;
+        this.refreshExpiration = refreshExpiration;
     }
 
     public String generateToken(Integer userId, String email) {
@@ -44,15 +50,6 @@ public class JwtUtil {
         return Integer.valueOf(claims.getSubject());
     }
 
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        return claims.get("email", String.class);
-    }
 
     public boolean validateToken(String token) {
         try {
@@ -65,5 +62,42 @@ public class JwtUtil {
             log.error("Invalid JWT token: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Refresh Token 생성
+     */
+    public String generateRefreshToken(Integer userId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshExpiration);
+
+        return Jwts.builder()
+                .subject(userId.toString())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(key)
+                .compact();
+    }
+
+    /**
+     * 토큰 만료 시간 조회 (밀리초)
+     */
+    public long getExpiration(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        Date expiration = claims.getExpiration();
+        Date now = new Date();
+        return expiration.getTime() - now.getTime();
+    }
+
+    /**
+     * Refresh Token 만료 시간 반환 (밀리초)
+     */
+    public long getRefreshExpiration() {
+        return refreshExpiration;
     }
 }

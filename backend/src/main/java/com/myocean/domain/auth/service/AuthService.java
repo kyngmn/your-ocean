@@ -9,9 +9,12 @@ import com.myocean.domain.user.entity.User;
 import com.myocean.domain.user.enums.Provider;
 import com.myocean.domain.user.repository.UserRepository;
 import com.myocean.global.util.JwtUtil;
+import com.myocean.response.exception.GeneralException;
+import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -30,6 +34,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -57,10 +62,10 @@ public class AuthService {
     public TokenResponse processGoogleCallback(CallbackRequest request) {
         try {
             // 1. authorization code로 Google에서 access token 가져오기
-            String accessToken = getGoogleAccessToken(request.code());
+            String googleAccessToken = getGoogleAccessToken(request.code());
 
             // 2. access token으로 사용자 정보 가져오기
-            Map<String, Object> userInfo = getGoogleUserInfo(accessToken);
+            Map<String, Object> userInfo = getGoogleUserInfo(googleAccessToken);
 
             // 3. 기존 사용자인지 확인 (회원가입된 사용자만 로그인 허용)
             String socialId = (String) userInfo.get("id");
@@ -68,29 +73,36 @@ public class AuthService {
 
             if (existingUser.isEmpty()) {
                 log.warn("미등록 사용자 로그인 시도 - socialId: {}", socialId);
-                throw new RuntimeException("미등록 사용자입니다. 회원가입이 필요합니다.");
+                throw new GeneralException(ErrorStatus.USER_NOT_REGISTERED_BY_GOOGLE);
             }
 
             User user = existingUser.get();
 
             // 4. JWT 토큰 생성
-            String jwtToken = jwtUtil.generateToken(user.getId(), user.getEmail());
-            log.info("Google 로그인 완료 - userId: {}, email: {}", user.getId(), user.getEmail());
-            return new TokenResponse(jwtToken, "refresh_token_placeholder");
+            String jwtAccessToken = jwtUtil.generateToken(user.getId(), user.getEmail());
+            String jwtRefreshToken = jwtUtil.generateRefreshToken(user.getId());
 
+            // 5. Refresh Token을 Redis에 저장
+            saveRefreshToken(user.getId(), jwtRefreshToken);
+
+            log.info("Google 로그인 완료 - userId: {}, email: {}", user.getId(), user.getEmail());
+            return new TokenResponse(jwtAccessToken, jwtRefreshToken);
+
+        } catch (GeneralException e) {
+            throw e; // GeneralException은 그대로 전달
         } catch (Exception e) {
             log.error("Google 로그인 처리 실패", e);
-            throw new RuntimeException("Google 로그인 처리 실패", e);
+            throw new GeneralException(ErrorStatus.GOOGLE_LOGIN_FAILED);
         }
     }
 
     public TokenResponse processGoogleJoin(JoinRequest request) {
         try {
             // 1. authorization code로 Google에서 access token 가져오기
-            String accessToken = getGoogleAccessToken(request.code());
+            String googleAccessToken = getGoogleAccessToken(request.code());
 
             // 2. access token으로 사용자 정보 가져오기
-            Map<String, Object> userInfo = getGoogleUserInfo(accessToken);
+            Map<String, Object> userInfo = getGoogleUserInfo(googleAccessToken);
 
             // 3. 이미 가입된 사용자인지 확인
             String socialId = (String) userInfo.get("id");
@@ -98,32 +110,38 @@ public class AuthService {
 
             if (existingUser.isPresent()) {
                 log.warn("이미 가입된 사용자 - socialId: {}", socialId);
-                throw new RuntimeException("이미 가입된 사용자입니다. 로그인을 이용해주세요.");
+                throw new GeneralException(ErrorStatus.USER_ALREADY_REGISTERED);
             }
 
             // 4. 새 유저 생성 (닉네임 포함)
             User user = createNewUser(userInfo, request.nickname());
 
             // 5. JWT 토큰 생성
-            String jwtToken = jwtUtil.generateToken(user.getId(), user.getEmail());
+            String jwtAccessToken = jwtUtil.generateToken(user.getId(), user.getEmail());
+            String jwtRefreshToken = jwtUtil.generateRefreshToken(user.getId());
+
+            // 6. Refresh Token을 Redis에 저장
+            saveRefreshToken(user.getId(), jwtRefreshToken);
 
             log.info("Google 회원가입 완료 - userId: {}, email: {}, nickname: {}", user.getId(), user.getEmail(), request.nickname());
 
-            return new TokenResponse(jwtToken, "refresh_token_placeholder");
+            return new TokenResponse(jwtAccessToken, jwtRefreshToken);
 
+        } catch (GeneralException e) {
+            throw e; // GeneralException은 그대로 전달
         } catch (Exception e) {
             log.error("Google 회원가입 처리 실패", e);
-            throw new RuntimeException("Google 회원가입 처리 실패", e);
+            throw new GeneralException(ErrorStatus.GOOGLE_JOIN_FAILED);
         }
     }
 
     public TokenResponse processGoogleOAuth(CallbackRequest request) {
         try {
             // 1. authorization code로 Google에서 access token 가져오기
-            String accessToken = getGoogleAccessToken(request.code());
+            String googleAccessToken = getGoogleAccessToken(request.code());
 
             // 2. access token으로 사용자 정보 가져오기
-            Map<String, Object> userInfo = getGoogleUserInfo(accessToken);
+            Map<String, Object> userInfo = getGoogleUserInfo(googleAccessToken);
 
             // 3. 사용자 존재 여부 확인 후 자동 처리
             String socialId = (String) userInfo.get("id");
@@ -153,32 +171,71 @@ public class AuthService {
             }
 
             // 4. JWT 토큰 생성
-            String jwtToken = jwtUtil.generateToken(user.getId(), user.getEmail());
+            String jwtAccessToken = jwtUtil.generateToken(user.getId(), user.getEmail());
+            String jwtRefreshToken = jwtUtil.generateRefreshToken(user.getId());
 
-            return new TokenResponse(jwtToken, "refresh_token_placeholder");
+            // 5. Refresh Token을 Redis에 저장
+            saveRefreshToken(user.getId(), jwtRefreshToken);
 
+            return new TokenResponse(jwtAccessToken, jwtRefreshToken);
+
+        } catch (GeneralException e) {
+            throw e; // GeneralException은 그대로 전달
         } catch (Exception e) {
             log.error("Google OAuth 처리 실패", e);
-            throw new RuntimeException("Google OAuth 처리 실패", e);
+            throw new GeneralException(ErrorStatus.GOOGLE_OAUTH_FAILED);
         }
     }
 
     public TokenResponse reissueToken(ReissueRequest request) {
-        // TODO: 토큰 재발급 로직 구현
-        // 1. refresh token 검증
-        // 2. 새로운 access token 생성
+        String refreshToken = request.refreshToken();
 
-        log.info("토큰 재발급 요청");
+        // 1. Refresh Token 유효성 검증
+        if (!jwtUtil.validateToken(refreshToken)) {
+            log.warn("유효하지 않은 Refresh Token");
+            throw new GeneralException(ErrorStatus.INVALID_REFRESHTOKEN);
+        }
 
-        return new TokenResponse("new_access_token", "new_refresh_token");
+        // 2. Refresh Token에서 userId 추출
+        Integer userId = jwtUtil.getUserIdFromToken(refreshToken);
+
+        // 3. Redis에 저장된 Refresh Token과 일치하는지 확인
+        String storedRefreshToken = getRefreshToken(userId);
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+            log.warn("Redis에 저장된 Refresh Token과 불일치 - userId: {}", userId);
+            throw new GeneralException(ErrorStatus.INVALID_REFRESHTOKEN);
+        }
+
+        // 4. User 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 5. 새로운 Access Token 생성
+        String newAccessToken = jwtUtil.generateToken(user.getId(), user.getEmail());
+
+        log.info("토큰 재발급 완료 - userId: {}", userId);
+
+        // Refresh Token은 그대로 사용 (재발급하지 않음)
+        return new TokenResponse(newAccessToken, refreshToken);
     }
 
     public void logout(String token) {
-        // TODO: 로그아웃 로직 구현
-        // 1. access token 무효화
-        // 2. refresh token 삭제
+        try {
+            // 1. Access Token에서 userId 추출
+            Integer userId = jwtUtil.getUserIdFromToken(token);
 
-        log.info("로그아웃 처리");
+            // 2. Refresh Token 삭제 (Redis)
+            deleteRefreshToken(userId);
+
+            // 3. Access Token 블랙리스트 추가 (만료 시간까지만 보관)
+            addToBlacklist(token);
+
+            log.info("로그아웃 완료 - userId: {}", userId);
+
+        } catch (Exception e) {
+            log.error("로그아웃 처리 실패", e);
+            throw new GeneralException(ErrorStatus.TOKEN_INVALID);
+        }
     }
 
     private String getGoogleAccessToken(String authorizationCode) {
@@ -202,7 +259,8 @@ public class AuthService {
         if (responseBody != null && responseBody.containsKey("access_token")) {
             return (String) responseBody.get("access_token");
         } else {
-            throw new RuntimeException("Google access token 조회 실패");
+            log.error("Google access token 조회 실패 - 응답: {}", responseBody);
+            throw new GeneralException(ErrorStatus.GOOGLE_ACCESS_TOKEN_NULL);
         }
     }
 
@@ -230,5 +288,42 @@ public class AuthService {
                 .build();
 
         return userRepository.save(newUser);
+    }
+
+    private void saveRefreshToken(Integer userId, String refreshToken) {
+        String key = "refresh_token:" + userId;
+        redisTemplate.opsForValue().set(
+                key,
+                refreshToken,
+                jwtUtil.getRefreshExpiration(),
+                TimeUnit.MILLISECONDS
+        );
+        log.debug("Refresh Token 저장 완료 - userId: {}", userId);
+    }
+
+    private String getRefreshToken(Integer userId) {
+        String key = "refresh_token:" + userId;
+        Object token = redisTemplate.opsForValue().get(key);
+        return token != null ? token.toString() : null;
+    }
+
+    private void deleteRefreshToken(Integer userId) {
+        String key = "refresh_token:" + userId;
+        redisTemplate.delete(key);
+        log.debug("Refresh Token 삭제 완료 - userId: {}", userId);
+    }
+
+    private void addToBlacklist(String token) {
+        long expiration = jwtUtil.getExpiration(token);
+        if (expiration > 0) {
+            String key = "blacklist:" + token;
+            redisTemplate.opsForValue().set(key, "logout", expiration, TimeUnit.MILLISECONDS);
+            log.debug("Access Token 블랙리스트 추가 완료");
+        }
+    }
+
+    public boolean isBlacklisted(String token) {
+        String key = "blacklist:" + token;
+        return redisTemplate.hasKey(key);
     }
 }

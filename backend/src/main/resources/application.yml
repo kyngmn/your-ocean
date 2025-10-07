@@ -21,7 +21,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop #update
+      ddl-auto: update #create-drop
     show-sql: true
     properties:
       hibernate:
@@ -42,14 +42,15 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
             client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
-            redirect-uri: ${OAUTH_REDIRECT_URI:https://be.myocean.cloud/login/oauth2/code/google}
+            redirect-uri: ${OAUTH_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
             scope:
               - email
               - profile
 
 jwt:
   secret: ${JWT_SECRET:myocean-jwt-secret-key-for-development-only-change-in-production}
-  expiration: 86400000 # 24시간
+  expiration: 86400000 # 24시간 (access token)
+  refresh-expiration: 1209600000 # 14일 (refresh token)
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
@@ -61,8 +62,8 @@ ai:
 # OpenAI 설정
 openai:
   api:
-    key: ${OPENAI_API_KEY:S13P22A303-8c3f000d-0bde-4c7f-bbd2-74cff80fd366}
-    url: ${OPENAI_API_URL:https://gms.ssafy.io/gmsapi/api.openai.com/v1}
+    key: ${OPENAI_API_KEY:your-openai-api-key}
+    url: ${OPENAI_API_URL:https://api.openai.com/v1}
   model: ${OPENAI_MODEL:gpt-4o}
   models:
     light: ${OPENAI_MODEL_LIGHT:gpt-4o-mini}
