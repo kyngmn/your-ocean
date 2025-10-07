@@ -14,7 +14,7 @@ import com.myocean.domain.gng.dto.converter.GngResultConverter;
 import com.myocean.domain.ug.entity.GameUgResult;
 import com.myocean.domain.ug.repository.GameUgResultRepository;
 import com.myocean.domain.ug.dto.converter.UgResultConverter;
-import com.myocean.domain.user.service.GameCountService;
+import com.myocean.domain.user.service.UserGameCountService;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class GameSessionService {
     private final GameSessionResultRepository gameSessionResultRepository;
     private final GameGngResultRepository gameGngResultRepository;
     private final GameUgResultRepository gameUgResultRepository;
-    private final GameCountService gameCountService;
+    private final UserGameCountService userGameCountService;
 
     @Transactional
     public GameSessionResponse createGameSession(Integer userId, GameSessionCreateRequest request) {
@@ -89,7 +89,7 @@ public class GameSessionService {
         GameSession updatedSession = gameSessionRepository.save(gameSession);
 
         // Redis 게임 카운트 증가
-        gameCountService.incrementGameCount(userId, gameSession.getGameType());
+        userGameCountService.incrementGameCount(userId, gameSession.getGameType());
 
         return GameSessionConverter.toResponse(updatedSession);
     }

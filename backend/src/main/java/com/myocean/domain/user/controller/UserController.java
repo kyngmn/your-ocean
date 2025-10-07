@@ -5,12 +5,13 @@ import com.myocean.domain.user.dto.response.UserResponse;
 import com.myocean.domain.user.dto.response.GameCountResponse;
 import com.myocean.domain.user.service.UserPersonaService;
 import com.myocean.domain.user.service.UserService;
-import com.myocean.domain.user.service.GameCountService;
+import com.myocean.domain.user.service.UserGameCountService;
 import com.myocean.global.openai.dailymessage.dto.DailyMessageResponse;
 import com.myocean.global.openai.dailymessage.service.DailyMessageService;
-import com.myocean.global.auth.CustomUserDetails;
-import com.myocean.global.auth.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
+import com.myocean.response.status.ErrorStatus;
 import com.myocean.response.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,24 +29,33 @@ public class UserController {
 
     private final UserService userService;
     private final UserPersonaService userPersonaService;
-    private final GameCountService gameCountService;
+    private final UserGameCountService userGameCountService;
     private final DailyMessageService dailyMessageService;
 
     @Operation(summary = "내 프로필 조회", description = "쿠키 기반 인증으로 현재 로그인한 사용자 정보를 조회합니다.")
     @GetMapping
     public ApiResponse<UserResponse> getCurrentUser(
-            @LoginMember CustomUserDetails userDetails) {
+            @LoginMember CustomUserDetails userDetails
+    ) {
         Integer userId = userDetails.getUserId();
         UserResponse user = userService.getCurrentUser(userId);
         return ApiResponse.onSuccess(user);
     }
 
     @Operation(summary = "닉네임/이미지 등 수정", description = "쿠키 기반 인증으로 현재 사용자의 프로필 정보를 수정합니다.")
-    @PatchMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserResponse> updateUser(
+            @Parameter(description = "변경할 닉네임 (선택, 2-10자)")
             @RequestParam(required = false) String nickname,
+            @Parameter(description = "변경할 프로필 이미지 파일 (선택)")
             @RequestParam(required = false) MultipartFile file,
-            @LoginMember CustomUserDetails userDetails) {
+            @LoginMember CustomUserDetails userDetails
+    ) {
+        // 둘 다 null인 경우 검증
+        if (nickname == null && file == null) {
+            throw new com.myocean.response.exception.GeneralException(ErrorStatus.USER_UPDATE_EMPTY);
+        }
+
         Integer userId = userDetails.getUserId();
         UserResponse user = userService.updateUserProfile(userId, nickname, file);
         return ApiResponse.onSuccess(user);
@@ -54,7 +64,8 @@ public class UserController {
     @Operation(summary = "계정 삭제", description = "쿠키 기반 인증으로 현재 사용자의 계정을 삭제합니다.")
     @DeleteMapping
     public ApiResponse<String> deleteUser(
-            @LoginMember CustomUserDetails userDetails) {
+            @LoginMember CustomUserDetails userDetails
+    ) {
         Integer userId = userDetails.getUserId();
         userService.deleteUser(userId);
         return ApiResponse.onSuccess("회원 탈퇴가 완료되었습니다.");
@@ -62,11 +73,11 @@ public class UserController {
 
     @Operation(summary = "유저 페르소나 조회", description = "특정 유저의 페르소나를 조회하고 존재 여부를 확인합니다.")
     @GetMapping("/personas")
-    public ApiResponse<UserPersonaResponse> getUserPersona(
-            @LoginMember CustomUserDetails userDetails) {
-
+    public ApiResponse<UserPersonaResponse> getUserPersonas(
+            @LoginMember CustomUserDetails userDetails
+    ) {
         Integer userId = userDetails.getUserId();
-        UserPersonaResponse response = userPersonaService.getUserPersona(userId);
+        UserPersonaResponse response = userPersonaService.getUserPersonas(userId);
 
         if (response == null) {
             return ApiResponse.onSuccess(SuccessStatus.PERSONA_NOT_EXISTS, null);
@@ -75,17 +86,14 @@ public class UserController {
     }
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 사용 가능 여부를 확인합니다. 형식 검사와 중복 검사를 함께 수행합니다.")
-    @GetMapping("/check-nickname")
+    @GetMapping("/nicknames/{nickname}/availability")
     public ApiResponse<Boolean> checkNicknameAvailability(
             @Parameter(description = "확인할 닉네임 (2-10글자, 한글/영문/숫자만 허용)")
-            @RequestParam String nickname) {
+            @PathVariable String nickname
+    ) {
         boolean isAvailable = userService.isNicknameAvailable(nickname);
-
-        if (isAvailable) {
-            return ApiResponse.onSuccess("사용 가능한 닉네임입니다.", true);
-        } else {
-            return ApiResponse.onSuccess("이미 사용 중인 닉네임입니다.", false);
-        }
+        String message = isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.";
+        return ApiResponse.onSuccess(message, isAvailable);
     }
 
     @Operation(summary = "내 게임 카운트 조회", description = "현재 유저의 게임별 플레이 횟수를 조회합니다.")
@@ -94,7 +102,7 @@ public class UserController {
             @LoginMember CustomUserDetails userDetails
     ) {
         Integer userId = userDetails.getUserId();
-        GameCountResponse gameCountResponse = gameCountService.getGameCountResponse(userId);
+        GameCountResponse gameCountResponse = userGameCountService.getGameCountResponse(userId);
         return ApiResponse.onSuccess(gameCountResponse);
     }
 

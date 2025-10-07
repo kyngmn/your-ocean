@@ -6,10 +6,16 @@ import com.myocean.domain.user.enums.Provider;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_provider_social_id", columnNames = {"provider", "social_id"})
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,7 +29,7 @@ public class User extends BaseRDBEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -44,9 +50,11 @@ public class User extends BaseRDBEntity {
     @Builder.Default
     private AiStatus aiStatus = AiStatus.UNSET;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserPersona> userPersonas;
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<UserPersona> userPersonas = new ArrayList<>(); // NPE 위험 대비 초기화
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Actor> actors;
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Actor> actors = new ArrayList<>(); // NPE 위험 대비 초기화
 }

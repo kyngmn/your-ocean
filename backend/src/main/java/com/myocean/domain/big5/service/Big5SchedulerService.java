@@ -6,7 +6,8 @@ import com.myocean.domain.big5.repository.Big5ResultRepository;
 import com.myocean.domain.user.entity.UserPersona;
 import com.myocean.domain.user.repository.UserPersonaRepository;
 import com.myocean.domain.user.repository.UserRepository;
-import com.myocean.domain.user.service.GameCountService;
+import com.myocean.domain.user.service.UserGameCountService;
+import com.myocean.domain.user.service.UserPersonaGenerationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,11 +25,11 @@ public class Big5SchedulerService {
     private final Big5ResultRepository big5ResultRepository;
     private final UserPersonaRepository userPersonaRepository;
     private final UserRepository userRepository;
-    private final GameCountService gameCountService;
-    private final PersonaGenerationService personaGenerationService;
+    private final UserGameCountService userGameCountService;
+    private final UserPersonaGenerationService personaGenerationService;
 
-//    @Scheduled(cron = "0 59 23 * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 */1 * * * *", zone = "Asia/Seoul")
+    //    @Scheduled(cron = "0 59 23 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 59 23 * * *", zone = "Asia/Seoul")
     @Transactional
     public void calculateAndUpdatePersonas() {
         log.info("스케줄링 돌아요");
@@ -53,7 +54,7 @@ public class Big5SchedulerService {
         }
 
         // Redis에서 게임 카운트 확인
-        if (!gameCountService.hasEnoughGameCounts(userId)) {
+        if (!userGameCountService.hasEnoughGameCounts(userId)) {
             return;
         }
 

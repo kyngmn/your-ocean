@@ -2,18 +2,15 @@ package com.myocean.domain.gamemanagement.controller;
 
 import com.myocean.domain.gamemanagement.dto.request.GameSessionCreateRequest;
 import com.myocean.domain.gamemanagement.dto.response.GameSessionResponse;
-import com.myocean.domain.gamemanagement.dto.response.GameSessionResultResponse;
 import com.myocean.domain.gamemanagement.service.GameSessionService;
-import com.myocean.global.auth.CustomUserDetails;
-import com.myocean.global.auth.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

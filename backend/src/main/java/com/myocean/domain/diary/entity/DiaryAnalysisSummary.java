@@ -17,7 +17,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"diary"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id",  callSuper = true)
 public class DiaryAnalysisSummary extends BaseRDBEntity {
 
     @Id

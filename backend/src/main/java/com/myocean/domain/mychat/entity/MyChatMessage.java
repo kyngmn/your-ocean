@@ -14,7 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"user", "senderActor"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id",  callSuper = true)
 public class MyChatMessage extends BaseRDBEntity {
 
     @Id

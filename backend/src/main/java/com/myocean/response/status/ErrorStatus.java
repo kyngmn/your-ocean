@@ -25,6 +25,7 @@ public enum ErrorStatus {
     NICKNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "USER4004", "이미 사용 중인 닉네임입니다."),
     NICKNAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST, "USER4005", "닉네임 형식이 올바르지 않습니다. 2-10글자, 한글/영문/숫자만 가능합니다."),
     NICKNAME_EMPTY(HttpStatus.BAD_REQUEST, "USER4006", "닉네임을 입력해주세요."),
+    USER_UPDATE_EMPTY(HttpStatus.BAD_REQUEST, "USER4007", "닉네임 또는 프로필 이미지 중 하나는 필수입니다."),
     _NOT_IMPLEMENTED(HttpStatus.NOT_IMPLEMENTED, "COMMON501", "아직 구현되지 않은 기능입니다."),
     /*
     Auth
@@ -36,6 +37,10 @@ public enum ErrorStatus {
     GOOGLE_USERINFO_NULL(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH4014", "Google 사용자 정보 응답이 비어 있습니다."),
     GOOGLE_USERINFO_INCOMPLETE(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH4015", "Google 사용자 정보가 불완전합니다."),
     INVALID_REFRESHTOKEN(HttpStatus.FORBIDDEN, "AUTH4030", "유효하지 않은 refreshToken입니다."),
+    USER_ALREADY_REGISTERED(HttpStatus.BAD_REQUEST, "AUTH4019", "이미 가입된 사용자입니다. 로그인을 이용해주세요."),
+    GOOGLE_LOGIN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH5000", "Google 로그인 처리 중 오류가 발생했습니다."),
+    GOOGLE_JOIN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH5001", "Google 회원가입 처리 중 오류가 발생했습니다."),
+    GOOGLE_OAUTH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH5002", "Google OAuth 처리 중 오류가 발생했습니다."),
 
     // 인증/인가 상세 에러
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH4016", "토큰이 만료되었습니다. 다시 로그인해주세요."),

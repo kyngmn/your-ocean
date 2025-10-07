@@ -1,4 +1,4 @@
-package com.myocean.global.auth;
+package com.myocean.global.security.annotation;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

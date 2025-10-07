@@ -1,4 +1,4 @@
-package com.myocean.global.auth;
+package com.myocean.global.security.userdetails;
 
 import com.myocean.domain.user.entity.User;
 import com.myocean.domain.user.repository.UserRepository;

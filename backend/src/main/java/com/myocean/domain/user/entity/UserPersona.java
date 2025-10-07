@@ -1,18 +1,22 @@
 package com.myocean.domain.user.entity;
 
 import com.myocean.global.common.BaseRDBEntity;
+import com.myocean.global.enums.BigCode;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.List;
 
 @Entity
-@Table(name = "user_personas")
+@Table(name = "user_personas",
+       uniqueConstraints = @UniqueConstraint(
+           name = "uq_user_persona",
+           columnNames = {"user_id", "big_code"}
+       ))
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user", "actors"})
+@ToString(exclude = "user")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class UserPersona extends BaseRDBEntity {
 
@@ -20,28 +24,25 @@ public class UserPersona extends BaseRDBEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
     private Integer userId;
 
-    @Column(name = "user_o", nullable = false)
-    private Integer userO;
-
-    @Column(name = "user_c", nullable = false)
-    private Integer userC;
-
-    @Column(name = "user_e", nullable = false)
-    private Integer userE;
-
-    @Column(name = "user_a", nullable = false)
-    private Integer userA;
-
-    @Column(name = "user_n", nullable = false)
-    private Integer userN;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Actor> actors;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "big_code", nullable = false)
+    private BigCode bigCode;
+
+    @Column(nullable = false)
+    private Short score;
+
+    @PrePersist
+    @PreUpdate
+    private void validateScore() {
+        if (score == null || score < 0 || score > 100) {
+            throw new IllegalArgumentException("big5 값은 0부터 100사이어야합니다");
+        }
+    }
 }

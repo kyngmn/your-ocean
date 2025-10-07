@@ -2,8 +2,8 @@ package com.myocean.domain.survey.controller;
 
 import com.myocean.domain.survey.dto.request.SurveyCompleteRequest;
 import com.myocean.domain.survey.service.SurveyResponseService;
-import com.myocean.global.auth.CustomUserDetails;
-import com.myocean.global.auth.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
 import com.myocean.response.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;

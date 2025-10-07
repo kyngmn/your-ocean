@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"diary", "senderActor"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class DiaryAnalysisMessage extends BaseRDBEntity {
 
     @Id

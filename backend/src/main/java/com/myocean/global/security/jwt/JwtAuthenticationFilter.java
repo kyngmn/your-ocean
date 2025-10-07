@@ -1,5 +1,6 @@
-package com.myocean.global.auth;
+package com.myocean.global.security.jwt;
 
+import com.myocean.domain.auth.service.AuthService;
 import com.myocean.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final AuthService authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -40,21 +42,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.info("📋 헤더에서 추출한 토큰: {}", token != null ? "있음" : "없음");
             }
 
-            if (token != null && jwtUtil.validateToken(token)) {
-                Integer userId = jwtUtil.getUserIdFromToken(token);
-                log.info("👤 JWT에서 추출한 사용자 ID: {}", userId);
+            if (token != null) {
+                // 블랙리스트 확인 (로그아웃된 토큰)
+                if (authService.isBlacklisted(token)) {
+                    log.warn("🚫 블랙리스트에 등록된 토큰 (로그아웃됨)");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
-                log.info("🔐 UserDetails 로드 완료: {}", userDetails.getUsername());
+                // 토큰 유효성 검증
+                if (jwtUtil.validateToken(token)) {
+                    Integer userId = jwtUtil.getUserIdFromToken(token);
+                    log.info("👤 JWT에서 추출한 사용자 ID: {}", userId);
 
-                UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
+                    log.info("🔐 UserDetails 로드 완료: {}", userDetails.getUsername());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("✅ SecurityContext에 인증 정보 설정 완료");
+                    UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("✅ SecurityContext에 인증 정보 설정 완료");
+                } else {
+                    log.warn("❌ 토큰이 유효하지 않음");
+                }
             } else {
-                log.warn("❌ 토큰이 없거나 유효하지 않음");
+                log.warn("❌ 토큰이 없음");
             }
         } catch (Exception e) {
             log.error("JWT 인증 실패: {}", e.getMessage());
@@ -95,7 +109,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         return null;
     }
 }

@@ -9,6 +9,7 @@ import com.myocean.domain.user.entity.Actor;
 import com.myocean.domain.user.enums.ActorKind;
 import com.myocean.domain.user.repository.ActorRepository;
 import com.myocean.global.ai.AiClientService;
+import com.myocean.global.enums.BigCode;
 import com.myocean.global.openai.chatanalysis.service.ChatAnalysisRefinementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -142,7 +143,7 @@ public class MyChatService {
                 });
     }
 
-    private Actor findOrCreatePersonaActorByBigCode(Integer userId, com.myocean.domain.survey.enums.BigCode bigCode) {
+    private Actor findOrCreatePersonaActorByBigCode(Integer userId, BigCode bigCode) {
         // 간단히 BigCode별로 구분되는 PERSONA Actor 생성/조회
         // 실제로는 더 복잡한 로직이 필요할 수 있지만, 일단 기본 PERSONA Actor 사용
         return findOrCreatePersonaActor(userId);
@@ -272,8 +273,8 @@ public class MyChatService {
                 }
 
                 // BigCode 매핑
-                com.myocean.domain.survey.enums.BigCode bigCode =
-                    com.myocean.global.ai.util.Big5AgentMapper.mapAgentNameToBigCode(agentName);
+                BigCode bigCode =
+                        com.myocean.global.ai.util.Big5AgentMapper.mapAgentNameToBigCode(agentName);
 
                 if (bigCode == null) {
                     log.warn("알 수 없는 Agent 이름: {} - userId: {}", agentName, userId);

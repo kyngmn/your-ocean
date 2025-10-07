@@ -1,8 +1,8 @@
 package com.myocean.global.kafka.controller;
 
 import com.myocean.domain.gng.dto.request.GngResponseCreateRequest;
-import com.myocean.global.auth.CustomUserDetails;
-import com.myocean.global.auth.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.global.kafka.service.KafkaProducerService;
 import com.myocean.response.ApiResponse;
 import com.myocean.response.status.SuccessStatus;

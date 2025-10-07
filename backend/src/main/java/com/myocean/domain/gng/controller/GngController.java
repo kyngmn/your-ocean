@@ -2,8 +2,8 @@ package com.myocean.domain.gng.controller;
 
 import com.myocean.domain.gng.dto.request.GngResponseCreateRequest;
 import com.myocean.domain.gng.service.GngService;
-import com.myocean.global.auth.CustomUserDetails;
-import com.myocean.global.auth.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
 import com.myocean.response.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.tags.Tag;

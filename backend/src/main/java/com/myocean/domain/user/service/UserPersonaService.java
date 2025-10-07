@@ -5,6 +5,7 @@ import com.myocean.domain.user.dto.response.UserPersonaResponse;
 import com.myocean.domain.user.entity.UserPersona;
 import com.myocean.domain.user.repository.UserPersonaRepository;
 import com.myocean.domain.user.repository.UserRepository;
+import com.myocean.global.enums.BigCode;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,16 +28,16 @@ public class UserPersonaService {
     private final UserPersonaConverter userPersonaConverter;
 
     @Transactional(readOnly = true)
-    public UserPersonaResponse getUserPersona(Integer userId) {
-        // 유저 존재 확인
-        userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_EXIST));
-
+    public UserPersonaResponse getUserPersonas(Integer userId) {
         List<UserPersona> personas = userPersonaRepository.findByUserIdAndDeletedAtIsNull(userId);
 
-        if (personas.isEmpty()) {return null;}
+        if (personas.isEmpty()) {
+            log.info("페르소나 조회 완료 - userId: {}, 페르소나 없음", userId);
+            return null;
+        }
 
-        // 첫 번째 페르소나 반환 (일반적으로 유저당 하나의 페르소나)
-        return userPersonaConverter.toResponse(personas.get(0));
+        log.info("페르소나 조회 완료 - userId: {}", userId);
+        return userPersonaConverter.toResponse(personas);
     }
+
 }

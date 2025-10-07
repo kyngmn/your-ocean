@@ -1,6 +1,6 @@
 package com.myocean.global.util;
 
-import com.myocean.global.auth.CustomUserDetails;
+import com.myocean.global.security.userdetails.CustomUserDetails;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import jakarta.servlet.http.Cookie;

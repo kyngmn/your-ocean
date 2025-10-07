@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth", description = "인증 관련 API")
@@ -43,7 +42,8 @@ public class AuthController {
         TokenResponse response = authService.processGoogleCallback(request);
 
         // JWT 토큰을 HttpOnly 쿠키로 설정
-        setJwtCookie(httpResponse, response.accessToken());
+        setAccessTokenCookie(httpResponse, response.accessToken());
+        setRefreshTokenCookie(httpResponse, response.refreshToken());
 
         return ApiResponse.onSuccess(response);
     }
@@ -54,15 +54,20 @@ public class AuthController {
         TokenResponse response = authService.processGoogleJoin(request);
 
         // JWT 토큰을 HttpOnly 쿠키로 설정
-        setJwtCookie(httpResponse, response.accessToken());
+        setAccessTokenCookie(httpResponse, response.accessToken());
+        setRefreshTokenCookie(httpResponse, response.refreshToken());
 
         return ApiResponse.onSuccess(response);
     }
 
     @Operation(summary = "토큰 재발급", description = "accessToken이 만료되었을 때, refreshToken으로 다시 발급합니다.")
     @PostMapping("/google/reissue")
-    public ApiResponse<TokenResponse> reissueToken(@Valid @RequestBody ReissueRequest request) {
+    public ApiResponse<TokenResponse> reissueToken(@Valid @RequestBody ReissueRequest request, HttpServletResponse httpResponse) {
         TokenResponse response = authService.reissueToken(request);
+
+        // 새로 발급된 Access Token을 쿠키에도 설정
+        setAccessTokenCookie(httpResponse, response.accessToken());
+
         return ApiResponse.onSuccess(response);
     }
 
@@ -72,7 +77,8 @@ public class AuthController {
         TokenResponse response = authService.processGoogleOAuth(request);
 
         // JWT 토큰을 HttpOnly 쿠키로 설정
-        setJwtCookie(httpResponse, response.accessToken());
+        setAccessTokenCookie(httpResponse, response.accessToken());
+        setRefreshTokenCookie(httpResponse, response.refreshToken());
 
         return ApiResponse.onSuccess(response);
     }
@@ -80,14 +86,25 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "로그아웃시 accessToken을 무효화하고 쿠키를 삭제합니다.")
     @PostMapping("/google/logout")
     public ApiResponse<Void> logout(@RequestHeader("Authorization") String token, HttpServletResponse httpResponse) {
-        authService.logout(token);
+        // Bearer 토큰에서 실제 토큰 추출
+        String actualToken = token.startsWith("Bearer ") ? token.substring(7) : token;
 
-        // JWT 쿠키 삭제
-        Cookie jwtCookie = new Cookie("accessToken", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0);
-        httpResponse.addCookie(jwtCookie);
+        // Redis에서 refresh token 삭제 및 access token 블랙리스트 추가
+        authService.logout(actualToken);
+
+        // Access Token 쿠키 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        httpResponse.addCookie(accessTokenCookie);
+
+        // Refresh Token 쿠키 삭제
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        httpResponse.addCookie(refreshTokenCookie);
 
         return ApiResponse.onSuccess(null);
     }
@@ -102,21 +119,34 @@ public class AuthController {
         TokenResponse response = new TokenResponse(accessToken, null);
 
         // JWT 토큰을 HttpOnly 쿠키로 설정
-        setJwtCookie(httpResponse, accessToken);
+        setAccessTokenCookie(httpResponse, accessToken);
 
         return ApiResponse.onSuccess(response);
     }
 
-    private void setJwtCookie(HttpServletResponse response, String token) {
-        Cookie jwtCookie = new Cookie("accessToken", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(86400); // 24시간
+    private void setAccessTokenCookie(HttpServletResponse response, String token) {
+        Cookie accessTokenCookie = new Cookie("accessToken", token);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(86400); // 24시간
 
-        // 환경별 Secure 설정 (help 프로젝트 방식)
+        // 환경별 Secure 설정
         boolean isProduction = !frontendUrl.contains("localhost");
-        jwtCookie.setSecure(isProduction);
+        accessTokenCookie.setSecure(isProduction);
 
-        response.addCookie(jwtCookie);
+        response.addCookie(accessTokenCookie);
+    }
+
+    private void setRefreshTokenCookie(HttpServletResponse response, String token) {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", token);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60); // 14일
+
+        // 환경별 Secure 설정
+        boolean isProduction = !frontendUrl.contains("localhost");
+        refreshTokenCookie.setSecure(isProduction);
+
+        response.addCookie(refreshTokenCookie);
     }
 }

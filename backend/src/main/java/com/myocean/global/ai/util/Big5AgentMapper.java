@@ -1,6 +1,6 @@
 package com.myocean.global.ai.util;
 
-import com.myocean.domain.survey.enums.BigCode;
+import com.myocean.global.enums.BigCode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
