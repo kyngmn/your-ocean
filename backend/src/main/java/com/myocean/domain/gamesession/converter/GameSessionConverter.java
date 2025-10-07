@@ -1,4 +1,4 @@
-package com.myocean.domain.gamesession.dto.converter;
+package com.myocean.domain.gamesession.converter;
 
 import com.myocean.domain.gamesession.dto.response.GameSessionResponse;
 import com.myocean.domain.gamesession.entity.GameSession;

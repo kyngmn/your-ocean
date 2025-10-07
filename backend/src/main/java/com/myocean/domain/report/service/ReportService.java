@@ -3,7 +3,7 @@ package com.myocean.domain.report.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.myocean.domain.report.dto.converter.ReportConverter;
+import com.myocean.domain.report.converter.ReportConverter;
 import com.myocean.domain.report.dto.response.ReportResponse;
 import com.myocean.domain.report.entity.Report;
 import com.myocean.domain.report.enums.ReportType;

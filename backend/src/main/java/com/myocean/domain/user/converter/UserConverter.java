@@ -1,4 +1,4 @@
-package com.myocean.domain.user.dto.converter;
+package com.myocean.domain.user.converter;
 
 import com.myocean.domain.user.dto.response.UserResponse;
 import com.myocean.domain.user.entity.User;

@@ -1,6 +1,6 @@
 package com.myocean.domain.diary.service;
 
-import com.myocean.domain.diary.dto.converter.DiaryConverter;
+import com.myocean.domain.diary.converter.DiaryConverter;
 import com.myocean.domain.diary.dto.request.DiaryCreateRequest;
 import com.myocean.domain.diary.dto.response.DiaryResponse;
 import com.myocean.domain.diary.dto.response.DiaryCalendarResponse;
@@ -8,21 +8,18 @@ import com.myocean.domain.diary.entity.Diary;
 import com.myocean.domain.diary.repository.DiaryRepository;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
-import com.myocean.domain.diary.entity.DiaryAnalysisSummary;
 import com.myocean.global.ai.AiClientService;
 import com.myocean.global.openai.diaryanalysis.service.DiaryAnalysisRefinementService;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 

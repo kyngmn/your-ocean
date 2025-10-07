@@ -8,7 +8,7 @@ import com.myocean.domain.survey.repository.SurveyAnswerRepository;
 import com.myocean.domain.big5.repository.Big5ResultRepository;
 import com.myocean.domain.friendchat.repository.FriendRepository;
 import com.myocean.domain.mychat.repository.MyChatRepository;
-import com.myocean.domain.user.dto.converter.UserConverter;
+import com.myocean.domain.user.converter.UserConverter;
 import com.myocean.domain.user.dto.response.UserResponse;
 import com.myocean.domain.user.entity.User;
 import com.myocean.domain.user.enums.AiStatus;

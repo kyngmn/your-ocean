@@ -1,21 +1,16 @@
 package com.myocean.domain.user.service;
 
-import com.myocean.domain.user.dto.converter.UserPersonaConverter;
+import com.myocean.domain.user.converter.UserPersonaConverter;
 import com.myocean.domain.user.dto.response.UserPersonaResponse;
 import com.myocean.domain.user.entity.UserPersona;
 import com.myocean.domain.user.repository.UserPersonaRepository;
 import com.myocean.domain.user.repository.UserRepository;
-import com.myocean.global.enums.BigCode;
-import com.myocean.response.exception.GeneralException;
-import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Service

@@ -1,4 +1,4 @@
-package com.myocean.domain.gng.dto.converter;
+package com.myocean.domain.gng.converter;
 
 import com.myocean.domain.gng.dto.response.GameGngResultResponse;
 import com.myocean.domain.gng.entity.GameGngResult;

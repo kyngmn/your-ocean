@@ -1,4 +1,4 @@
-package com.myocean.domain.big5.dto.converter;
+package com.myocean.domain.big5.converter;
 
 import com.myocean.domain.big5.dto.request.Big5ResultCreateRequest;
 import com.myocean.domain.big5.dto.request.Big5ResultUpdateRequest;
