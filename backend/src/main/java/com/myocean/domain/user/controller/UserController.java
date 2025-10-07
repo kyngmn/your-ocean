@@ -86,10 +86,10 @@ public class UserController {
     }
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 사용 가능 여부를 확인합니다. 형식 검사와 중복 검사를 함께 수행합니다.")
-    @GetMapping("/check-nickname")
+    @GetMapping("/nicknames/{nickname}/availability")
     public ApiResponse<Boolean> checkNicknameAvailability(
             @Parameter(description = "확인할 닉네임 (2-10글자, 한글/영문/숫자만 허용)")
-            @RequestParam String nickname
+            @PathVariable String nickname
     ) {
         boolean isAvailable = userService.isNicknameAvailable(nickname);
         String message = isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.";
