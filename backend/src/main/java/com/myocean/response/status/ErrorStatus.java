@@ -85,6 +85,7 @@ public enum ErrorStatus {
     /*
     Survey
      */
+    SURVEY_ALREADY_SUBMITTED(HttpStatus.BAD_REQUEST, "SURVEY4001", "이미 설문조사를 완료했습니다. 설문조사는 1회만 제출 가능합니다."),
     SURVEY_RESPONSE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SURVEY5000", "설문 응답 저장에 실패했습니다."),
     SURVEY_CALCULATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SURVEY5001", "빅파이브 점수 계산에 실패했습니다."),
 
