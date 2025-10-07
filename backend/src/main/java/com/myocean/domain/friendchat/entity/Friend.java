@@ -1,6 +1,7 @@
 package com.myocean.domain.friendchat.entity;
 
 import com.myocean.domain.common.BaseRDBEntity;
+import com.myocean.domain.friendchat.entity.FriendChatMessage;
 import com.myocean.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"user", "friend", "friendChatMessages"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Friend extends BaseRDBEntity{
 
     @Id

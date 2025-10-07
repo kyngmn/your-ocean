@@ -26,7 +26,9 @@ public class ReportController {
 
     @Operation(summary = "Get SELF report", description = "Get user SELF report")
     @GetMapping("/self")
-    public ApiResponse<ReportResponse> getSelfReport(@LoginMember CustomUserDetails userDetails) {
+    public ApiResponse<ReportResponse> getSelfReport(
+            @LoginMember CustomUserDetails userDetails
+    ) {
         Integer userId = extractUserId(userDetails);
         ReportResponse response = reportService.getSelfReport(userId);
         return ApiResponse.onSuccess(response);

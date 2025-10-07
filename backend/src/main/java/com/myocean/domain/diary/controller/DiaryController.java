@@ -3,6 +3,7 @@ package com.myocean.domain.diary.controller;
 import com.myocean.domain.diary.dto.request.DiaryCreateRequest;
 import com.myocean.domain.diary.dto.response.DiaryCalendarResponse;
 import com.myocean.domain.diary.dto.response.DiaryResponse;
+import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.service.DiaryService;
 import com.myocean.global.auth.CustomUserDetails;
 import com.myocean.global.auth.LoginMember;
@@ -12,8 +13,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+
+@Slf4j
 @Tag(name = "Diary", description = "Diary API")
 @RestController
 @RequestMapping("/api/v1/diaries")
@@ -26,8 +30,8 @@ public class DiaryController {
     @PostMapping
     public ApiResponse<DiaryResponse> createDiary(
             @Valid @RequestBody DiaryCreateRequest request,
-            @LoginMember CustomUserDetails userDetails) {
-
+            @LoginMember CustomUserDetails userDetails
+    ){
         Integer userId = extractUserId(userDetails);
         DiaryResponse response = diaryService.createDiary(userId, request);
         return ApiResponse.onSuccess(response);
@@ -37,8 +41,8 @@ public class DiaryController {
     @GetMapping("/{diaryId}")
     public ApiResponse<DiaryResponse> getDiaryById(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
-            @LoginMember CustomUserDetails userDetails) {
-
+            @LoginMember CustomUserDetails userDetails
+    ) {
         Integer userId = extractUserId(userDetails);
         DiaryResponse response = diaryService.getDiaryById(userId, diaryId);
         return ApiResponse.onSuccess(response);
@@ -77,25 +81,16 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-    @Operation(summary = "Analyze diary", description = "Request AI analysis for specific diary")
-    @PostMapping("/{diaryId}/analysis")
-    public ApiResponse<Object> analyzeDiary(
-            @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
-            @LoginMember CustomUserDetails userDetails) {
 
-        Integer userId = extractUserId(userDetails);
-        Object response = diaryService.analyzeDiary(userId, diaryId);
-        return ApiResponse.onSuccess(response);
-    }
-
-    @Operation(summary = "Get diary analysis", description = "Get AI analysis result for specific diary")
+    @Operation(summary = "다이어리 분석 결과 가져오기", description = "Get AI analysis result for specific diary")
     @GetMapping("/{diaryId}/analysis")
-    public ApiResponse<Object> getDiaryAnalysis(
+    public ApiResponse<DiaryAnalysisResponse> getDiaryAnalysis(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
-            @LoginMember CustomUserDetails userDetails) {
+            @LoginMember CustomUserDetails userDetails
+    ){
 
         Integer userId = extractUserId(userDetails);
-        Object response = diaryService.getDiaryAnalysis(userId, diaryId);
+        DiaryAnalysisResponse response = diaryService.getDiaryAnalysis(userId, diaryId);
         return ApiResponse.onSuccess(response);
     }
 

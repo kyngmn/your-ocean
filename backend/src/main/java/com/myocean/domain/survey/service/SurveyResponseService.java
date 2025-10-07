@@ -2,15 +2,14 @@ package com.myocean.domain.survey.service;
 
 import com.myocean.domain.report.service.ReportService;
 import com.myocean.domain.survey.dto.request.SurveyCompleteRequest;
-import com.myocean.domain.survey.entity.Survey;
 import com.myocean.domain.survey.entity.SurveyResponse;
 import com.myocean.domain.survey.repository.SurveyRepository;
 import com.myocean.domain.survey.repository.SurveyResponseRepository;
-import com.myocean.domain.user.entity.User;
 import com.myocean.domain.user.repository.UserRepository;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -54,6 +54,7 @@ public class SurveyResponseService {
             // 2) 120문항 완료 후 빅파이브 점수 계산 및 리포트 생성
             Map<String, Integer> bigFiveScores = surveyCalculationService.calculateBigFiveScoresByUserId(userId);
             reportService.saveSelfReport(userId, bigFiveScores);
+            log.info("120문항 완료 후 빅파이브 점수 계산 및 리포트 생성 ");
 
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus.SURVEY_CALCULATION_FAILED, e);

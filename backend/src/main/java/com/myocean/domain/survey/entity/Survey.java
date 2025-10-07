@@ -18,6 +18,7 @@ import java.util.List;
 public class Survey extends BaseRDBEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
 
     @ManyToOne(fetch = FetchType.LAZY)

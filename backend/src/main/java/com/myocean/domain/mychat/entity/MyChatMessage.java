@@ -1,5 +1,6 @@
 package com.myocean.domain.mychat.entity;
 
+import com.myocean.domain.common.BaseRDBEntity;
 import com.myocean.domain.user.entity.Actor;
 import com.myocean.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @ToString(exclude = {"user", "senderActor"})
 @EqualsAndHashCode(of = "id")
-public class MyChatMessage {
+public class MyChatMessage extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +33,9 @@ public class MyChatMessage {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "is_read", nullable = false)
+    @Builder.Default
+    private Boolean isRead = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

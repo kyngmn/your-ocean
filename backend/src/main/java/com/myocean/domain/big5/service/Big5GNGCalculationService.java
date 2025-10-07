@@ -57,6 +57,7 @@ public class Big5GNGCalculationService {
                     .build();
 
             big5ResultRepository.save(big5Result);
+
         } catch (GeneralException e) {
             // 이미 정의된 비즈니스 예외는 그대로 전파
             throw e;

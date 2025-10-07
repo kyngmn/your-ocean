@@ -35,4 +35,7 @@ public interface GameSessionRepository extends JpaRepository<GameSession, Long> 
     @Modifying
     @Query("DELETE FROM GameSession gs WHERE gs.userId = :userId")
     void deleteByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT COUNT(gs) FROM GameSession gs WHERE gs.userId = :userId AND gs.gameType = :gameType AND gs.finishedAt IS NOT NULL")
+    Long countCompletedGamesByUserIdAndGameType(@Param("userId") Integer userId, @Param("gameType") GameType gameType);
 }

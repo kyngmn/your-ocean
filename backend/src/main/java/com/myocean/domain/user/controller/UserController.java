@@ -1,33 +1,24 @@
 package com.myocean.domain.user.controller;
 
-import com.myocean.domain.user.dto.request.CreateUserRequest;
-import com.myocean.domain.user.dto.request.NicknameUpdateRequest;
-import com.myocean.domain.user.dto.request.UpdateUserRequest;
 import com.myocean.domain.user.dto.response.UserPersonaResponse;
 import com.myocean.domain.user.dto.response.UserResponse;
 import com.myocean.domain.user.dto.response.GameCountResponse;
 import com.myocean.domain.user.service.UserPersonaService;
 import com.myocean.domain.user.service.UserService;
 import com.myocean.domain.user.service.GameCountService;
+import com.myocean.global.openai.dailymessage.dto.DailyMessageResponse;
+import com.myocean.global.openai.dailymessage.service.DailyMessageService;
 import com.myocean.global.auth.CustomUserDetails;
 import com.myocean.global.auth.LoginMember;
-import com.myocean.global.util.AuthUtil;
 import com.myocean.response.ApiResponse;
 import com.myocean.response.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Tag(name = "User", description = "유저 관리 API")
 @RestController
@@ -38,6 +29,7 @@ public class UserController {
     private final UserService userService;
     private final UserPersonaService userPersonaService;
     private final GameCountService gameCountService;
+    private final DailyMessageService dailyMessageService;
 
     @Operation(summary = "내 프로필 조회", description = "쿠키 기반 인증으로 현재 로그인한 사용자 정보를 조회합니다.")
     @GetMapping
@@ -99,10 +91,17 @@ public class UserController {
     @Operation(summary = "내 게임 카운트 조회", description = "현재 유저의 게임별 플레이 횟수를 조회합니다.")
     @GetMapping("/games/count")
     public ApiResponse<GameCountResponse> getUserGameCounts(
-            @LoginMember CustomUserDetails userDetails)
-    {
+            @LoginMember CustomUserDetails userDetails
+    ) {
         Integer userId = userDetails.getUserId();
         GameCountResponse gameCountResponse = gameCountService.getGameCountResponse(userId);
         return ApiResponse.onSuccess(gameCountResponse);
+    }
+
+    @Operation(summary = "오늘의 말", description = "Big5 성격 특성 중 하나를 랜덤으로 선택하여 해당 특성에 맞는 오늘의 말을 제공합니다.")
+    @GetMapping("/daily-message")
+    public ApiResponse<DailyMessageResponse> getDailyMessage() {
+        DailyMessageResponse response = dailyMessageService.getDailyMessage();
+        return ApiResponse.onSuccess(response);
     }
 }

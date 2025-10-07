@@ -26,6 +26,8 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
+    networks:
+      - ocean-net
     env_file:
       - .env
 
@@ -71,6 +73,7 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  redis_data:
 
 networks:
   ocean-net:

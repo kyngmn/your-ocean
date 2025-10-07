@@ -304,4 +304,25 @@ INSERT INTO game_ug_order (id, role_type, persona_type, money, rate) VALUES
 (89, 3, 'FRIEND',   'LARGE',  0),
 (90, 3, 'STRANGER', 'SMALL',  0);
 
+-- ===========================
+-- Big5 성격 유형별 Persona 데이터
+-- ===========================
+
+-- Big5 성격 유형별 user_personas 데이터 삽입 (user_id 1번 고정)
+INSERT INTO user_personas (user_id, user_o, user_c, user_e, user_a, user_n, created_at) VALUES
+(1, 100, 50, 50, 50, 50, NOW()),  -- O 특화 (개방성)
+(1, 50, 100, 50, 50, 50, NOW()),  -- C 특화 (성실성)
+(1, 50, 50, 100, 50, 50, NOW()),  -- E 특화 (외향성)
+(1, 50, 50, 50, 100, 50, NOW()),  -- A 특화 (친화성)
+(1, 50, 50, 50, 50, 100, NOW());  -- N 특화 (신경증)
+
+-- Big5 성격 유형별 actors 데이터 삽입
+-- ID 1=O, 2=C, 3=E, 4=A, 5=N
+INSERT INTO actors (id, kind, user_id, persona_id) VALUES
+(1, 'PERSONA', 1, (SELECT id FROM user_personas WHERE user_o = 100 AND user_c = 50 AND user_e = 50 AND user_a = 50 AND user_n = 50 AND user_id = 1)),   -- O 특화
+(2, 'PERSONA', 1, (SELECT id FROM user_personas WHERE user_o = 50 AND user_c = 100 AND user_e = 50 AND user_a = 50 AND user_n = 50 AND user_id = 1)),  -- C 특화
+(3, 'PERSONA', 1, (SELECT id FROM user_personas WHERE user_o = 50 AND user_c = 50 AND user_e = 100 AND user_a = 50 AND user_n = 50 AND user_id = 1)), -- E 특화
+(4, 'PERSONA', 1, (SELECT id FROM user_personas WHERE user_o = 50 AND user_c = 50 AND user_e = 50 AND user_a = 100 AND user_n = 50 AND user_id = 1)), -- A 특화
+(5, 'PERSONA', 1, (SELECT id FROM user_personas WHERE user_o = 50 AND user_c = 50 AND user_e = 50 AND user_a = 50 AND user_n = 100 AND user_id = 1)); -- N 특화
+
 COMMIT;

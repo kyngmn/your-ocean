@@ -24,8 +24,8 @@ public class SurveyResponseController {
     @PostMapping("/complete")
     public ApiResponse<Void> completeSurvey(
             @Valid @RequestBody SurveyCompleteRequest request,
-            @LoginMember CustomUserDetails userDetails) {
-
+            @LoginMember CustomUserDetails userDetails
+    ){
         Integer userId = userDetails.getUserId();
         surveyResponseService.completeSurvey(userId, request);
         return ApiResponse.onSuccess(SuccessStatus.SURVEY_COMPLETE, null);
