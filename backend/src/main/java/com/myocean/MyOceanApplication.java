@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-public class MyoceanApplication {
+public class MyOceanApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MyoceanApplication.class, args);
+        SpringApplication.run(MyOceanApplication.class, args);
     }
 
 }
