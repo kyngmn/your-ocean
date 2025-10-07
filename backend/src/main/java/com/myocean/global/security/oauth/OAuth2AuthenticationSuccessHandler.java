@@ -55,15 +55,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String actualFrontendUrl;
 
         // 개발 환경인지 확인 (환경변수 기준)
-        log.info("🔧 환경변수 FRONTEND_URL: {}", frontendUrl);
+        log.info("환경변수 FRONTEND_URL: {}", frontendUrl);
         if (frontendUrl.contains("localhost")) {
             // 개발 환경: HTTP 로컬호스트 사용 (HTTPS가 아님)
             actualFrontendUrl = "http://localhost:3000";
-            log.info("🏠 개발 환경 감지 - HTTP localhost 사용: {}", actualFrontendUrl);
+            log.info("개발 환경 감지 - HTTP localhost 사용: {}", actualFrontendUrl);
         } else {
             // 프로덕션 환경: 설정된 HTTPS URL 사용
             actualFrontendUrl = frontendUrl;
-            log.info("🏭 프로덕션 환경 - HTTPS URL 사용: {}", actualFrontendUrl);
+            log.info("프로덕션 환경 - HTTPS URL 사용: {}", actualFrontendUrl);
         }
 
         // 로컬 개발 환경에서는 쿠키 설정 생략 (크로스 도메인 문제로 인해)
