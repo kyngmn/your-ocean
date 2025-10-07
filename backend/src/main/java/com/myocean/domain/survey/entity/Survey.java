@@ -1,6 +1,6 @@
 package com.myocean.domain.survey.entity;
 
-import com.myocean.domain.common.BaseRDBEntity;
+import com.myocean.global.common.BaseRDBEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,7 +1,6 @@
 package com.myocean.domain.friendchat.entity;
 
-import com.myocean.domain.common.BaseRDBEntity;
-import com.myocean.domain.friendchat.entity.FriendChatMessage;
+import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,12 +1,11 @@
 package com.myocean.domain.user.entity;
 
-import com.myocean.domain.common.BaseRDBEntity;
+import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.domain.user.enums.AiStatus;
 import com.myocean.domain.user.enums.Provider;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity

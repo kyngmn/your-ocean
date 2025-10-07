@@ -1,13 +1,10 @@
 package com.myocean.domain.mychat.entity;
 
-import com.myocean.domain.common.BaseRDBEntity;
+import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.domain.user.entity.Actor;
 import com.myocean.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "my_chat_messages")
