@@ -55,6 +55,7 @@ public enum ErrorStatus {
     GAME_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "GAME4000", "게임 세션을 찾을 수 없습니다."),
     GAME_SESSION_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "GAME4001", "게임 세션 결과를 찾을 수 없습니다."),
     GAME_SESSION_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "GAME4002", "이미 종료된 게임 세션입니다."),
+    INVALID_GAME_TYPE(HttpStatus.BAD_REQUEST, "GAME4003", "유효하지 않은 게임 타입입니다. (GNG, UG, BART 중 하나여야 합니다)"),
 
     /*
     BART Game
