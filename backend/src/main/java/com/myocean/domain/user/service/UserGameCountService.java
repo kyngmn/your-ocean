@@ -1,6 +1,6 @@
 package com.myocean.domain.user.service;
 
-import com.myocean.domain.gamemanagement.enums.GameType;
+import com.myocean.domain.gamesession.enums.GameType;
 import com.myocean.domain.user.dto.response.GameCountResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

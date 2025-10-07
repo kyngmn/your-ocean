@@ -12,23 +12,20 @@ import com.myocean.domain.bart.repository.GameBartResponseRepository;
 import com.myocean.domain.bart.repository.GameBartResultRepository;
 import com.myocean.domain.bart.service.GameBartService;
 import com.myocean.domain.big5.service.Big5BARTCalculationService;
-import com.myocean.domain.gamemanagement.entity.GameSession;
-import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
+import com.myocean.domain.gamesession.entity.GameSession;
+import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

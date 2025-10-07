@@ -1,8 +1,8 @@
 package com.myocean.domain.gng.service;
 
 import com.myocean.domain.big5.service.Big5GNGCalculationService;
-import com.myocean.domain.gamemanagement.entity.GameSession;
-import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
+import com.myocean.domain.gamesession.entity.GameSession;
+import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.gng.entity.GameGngResponse;
 import com.myocean.domain.gng.entity.GameGngResult;
 import com.myocean.domain.gng.enums.GngStimulus;

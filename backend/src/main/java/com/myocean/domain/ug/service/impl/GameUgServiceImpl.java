@@ -1,8 +1,8 @@
 package com.myocean.domain.ug.service.impl;
 
-import com.myocean.domain.gamemanagement.entity.GameSession;
-import com.myocean.domain.gamemanagement.enums.GameType;
-import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
+import com.myocean.domain.gamesession.entity.GameSession;
+import com.myocean.domain.gamesession.enums.GameType;
+import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.ug.dto.request.GameUgResponseRequest;
 import com.myocean.domain.ug.dto.response.GameUgOrderResponse;
 import com.myocean.domain.ug.dto.response.GameUgResponseDto;
@@ -314,9 +314,13 @@ public class GameUgServiceImpl implements GameUgService {
         GameSession gameSession = gameSessionRepository.findById(sessionId)
                 .orElse(null);
         if (gameSession != null && gameSession.getFinishedAt() == null) {
-            gameSession.setFinishedAt(LocalDateTime.now());
-            gameSessionRepository.save(gameSession);
-            log.info("Game session {} marked as finished", sessionId);
+            try {
+                gameSession.finish();
+                gameSessionRepository.save(gameSession);
+                log.info("Game session {} marked as finished", sessionId);
+            } catch (IllegalStateException e) {
+                log.warn("Game session {} already finished", sessionId);
+            }
         }
     }
 

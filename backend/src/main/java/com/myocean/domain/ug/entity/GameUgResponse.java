@@ -1,6 +1,6 @@
 package com.myocean.domain.ug.entity;
 
-import com.myocean.domain.gamemanagement.entity.GameSession;
+import com.myocean.domain.gamesession.entity.GameSession;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -59,7 +59,7 @@ public class Big5SchedulerService {
         }
 
         // 해당 유저의 게임 타입별 big5 결과 조회
-        List<Big5Result> gameResults = big5ResultRepository.findByUserIdAndSourceType(userId, Big5SourceType.GAME);
+        List<Big5Result> gameResults = big5ResultRepository.findByUserIdAndSourceType(userId, Big5SourceType.GAME_SESSION);
 
         if (gameResults.isEmpty()) {
             return;

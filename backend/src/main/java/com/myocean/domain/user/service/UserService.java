@@ -1,8 +1,7 @@
 package com.myocean.domain.user.service;
 
 import com.myocean.domain.friendchat.repository.FriendInvitationRepository;
-import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
-import com.myocean.domain.gamemanagement.repository.GameSessionResultRepository;
+import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.diary.repository.DiaryRepository;
 import com.myocean.domain.report.repository.ReportRepository;
 import com.myocean.domain.survey.repository.SurveyResponseRepository;
@@ -34,7 +33,6 @@ public class UserService {
     private final FileUploadService fileUploadService;
     private final FriendInvitationRepository friendInvitationRepository;
     private final GameSessionRepository gameSessionRepository;
-    private final GameSessionResultRepository gameSessionResultRepository;
     private final DiaryRepository diaryRepository;
     private final ReportRepository reportRepository;
     private final SurveyResponseRepository surveyResponseRepository;
@@ -138,7 +136,6 @@ public class UserService {
 
         // 연관 데이터 삭제
         friendInvitationRepository.deleteByInviterUserIdOrInviteeUserId(userId, userId);
-        gameSessionResultRepository.deleteByUserId(userId);
         gameSessionRepository.deleteByUserId(userId);
         diaryRepository.deleteByUserId(userId);
         reportRepository.deleteByUserId(userId);

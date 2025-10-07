@@ -236,7 +236,7 @@ public class Big5BARTCalculationService {
         try {
             // 이미 해당 BART 세션에 대한 Big5 결과가 있는지 확인
             List<Big5Result> existingResults = big5ResultRepository
-                    .findByUserIdAndSourceType(userId, Big5SourceType.GAME);
+                    .findByUserIdAndSourceType(userId, Big5SourceType.GAME_SESSION);
             
             boolean alreadyExists = existingResults.stream()
                     .anyMatch(r -> r.getSourceId().equals(sessionId));
@@ -244,7 +244,7 @@ public class Big5BARTCalculationService {
             if (!alreadyExists) {
                 Big5Result big5Result = Big5Result.builder()
                         .userId(userId)
-                        .sourceType(Big5SourceType.GAME)
+                        .sourceType(Big5SourceType.GAME_SESSION)
                         .sourceId(sessionId)
                         .resultE(scores.getExtraversion())
                         .resultN(scores.getNeuroticism())

@@ -1,4 +1,4 @@
-package com.myocean.domain.gamemanagement.dto.response;
+package com.myocean.domain.gng.dto.response;
 
 import lombok.Builder;
 

@@ -4,8 +4,8 @@ import com.myocean.domain.big5.dto.request.Big5ResultCreateRequest;
 import com.myocean.domain.big5.entity.Big5Result;
 import com.myocean.domain.big5.enums.Big5SourceType;
 import com.myocean.domain.big5.repository.Big5ResultRepository;
-import com.myocean.domain.gamemanagement.entity.GameSession;
-import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
+import com.myocean.domain.gamesession.entity.GameSession;
+import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.gng.entity.GameGngResponse;
 import com.myocean.domain.gng.enums.GngStimulus;
 import com.myocean.response.exception.GeneralException;
@@ -100,7 +100,7 @@ public class Big5GNGCalculationService {
             Integer neuroticism = calculateNeuroticism(totalCorrect, totalIncorrect, nogoIncorrect);
 
             return Big5ResultCreateRequest.builder()
-                    .sourceType(Big5SourceType.GAME)
+                    .sourceType(Big5SourceType.GAME_SESSION)
                     .sourceId(sessionId)
                     .openness(null)                 // GNG에서는 측정 불가
                     .conscientiousness(conscientiousness)
