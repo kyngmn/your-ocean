@@ -2,8 +2,8 @@ package com.myocean.domain.report.controller;
 
 import com.myocean.domain.report.dto.response.ReportResponse;
 import com.myocean.domain.report.service.ReportService;
-import com.myocean.global.auth.LoginMember;
-import com.myocean.global.auth.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
 import com.myocean.response.ApiResponse;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;

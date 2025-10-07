@@ -1,7 +1,7 @@
 package com.myocean.global.config;
 
-import com.myocean.global.auth.JwtAuthenticationFilter;
-import com.myocean.global.auth.OAuth2AuthenticationSuccessHandler;
+import com.myocean.global.security.jwt.JwtAuthenticationFilter;
+import com.myocean.global.security.oauth.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

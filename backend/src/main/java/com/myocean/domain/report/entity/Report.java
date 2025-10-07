@@ -1,6 +1,6 @@
 package com.myocean.domain.report.entity;
 
-import com.myocean.domain.common.BaseRDBEntity;
+import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.domain.report.enums.ReportType;
 import com.myocean.domain.user.entity.User;
 import jakarta.persistence.*;

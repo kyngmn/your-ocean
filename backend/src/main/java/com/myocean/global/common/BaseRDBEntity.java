@@ -1,4 +1,4 @@
-package com.myocean.domain.common;
+package com.myocean.global.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

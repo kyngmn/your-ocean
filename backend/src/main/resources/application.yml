@@ -15,13 +15,13 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      port: ${REDIS_PORT:6381}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop #update
     show-sql: true
     properties:
       hibernate:
@@ -42,7 +42,7 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
             client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
-            redirect-uri: ${OAUTH_REDIRECT_URI:https://j13a303.p.ssafy.io/login/oauth2/code/google}
+            redirect-uri: ${OAUTH_REDIRECT_URI:https://be.myocean.cloud/login/oauth2/code/google}
             scope:
               - email
               - profile
@@ -58,6 +58,17 @@ ai:
   server:
     url: ${AI_SERVER_URL:http://localhost:8000}
 
+# OpenAI 설정
+openai:
+  api:
+    key: ${OPENAI_API_KEY:S13P22A303-8c3f000d-0bde-4c7f-bbd2-74cff80fd366}
+    url: ${OPENAI_API_URL:https://gms.ssafy.io/gmsapi/api.openai.com/v1}
+  model: ${OPENAI_MODEL:gpt-4o}
+  models:
+    light: ${OPENAI_MODEL_LIGHT:gpt-4o-mini}
+    mini: ${OPENAI_MODEL_MINI:gpt-4o-mini}
+    standard: ${OPENAI_MODEL_STANDARD:gpt-4o}
+
 # MinIO 설정
 minio:
   endpoint: ${MINIO_ENDPOINT:http://myocean-minio:9000}
@@ -69,6 +80,8 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.myocean.myocean.global.openai: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
 
 server:
   # 프록시 뒤에서 HTTPS 요청을 올바르게 처리하도록 설정

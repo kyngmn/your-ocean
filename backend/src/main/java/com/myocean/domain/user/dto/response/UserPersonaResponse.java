@@ -13,19 +13,19 @@ public record UserPersonaResponse(
         Integer userId,
 
         @Schema(description = "개방성 점수", example = "75")
-        Integer userO,
+        Short userO,
 
         @Schema(description = "성실성 점수", example = "80")
-        Integer userC,
+        Short userC,
 
         @Schema(description = "외향성 점수", example = "65")
-        Integer userE,
+        Short userE,
 
         @Schema(description = "친화성 점수", example = "70")
-        Integer userA,
+        Short userA,
 
         @Schema(description = "신경성 점수", example = "60")
-        Integer userN,
+        Short userN,
 
         @Schema(description = "생성일시")
         LocalDateTime createdAt,

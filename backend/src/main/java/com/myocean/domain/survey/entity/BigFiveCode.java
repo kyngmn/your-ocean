@@ -1,7 +1,7 @@
 package com.myocean.domain.survey.entity;
 
-import com.myocean.domain.common.BaseRDBEntity;
-import com.myocean.domain.survey.enums.BigCode;
+import com.myocean.global.common.BaseRDBEntity;
+import com.myocean.global.enums.BigCode;
 import jakarta.persistence.*;
 import lombok.*;
 

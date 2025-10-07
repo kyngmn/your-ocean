@@ -2,25 +2,20 @@ package com.myocean.domain.friendchat.controller;
 
 import com.myocean.domain.friendchat.dto.FriendResponse;
 import com.myocean.domain.friendchat.entity.Friend;
-import com.myocean.domain.friendchat.entity.FriendInvitation;
 import com.myocean.domain.friendchat.service.FriendService;
-import com.myocean.global.auth.CustomUserDetails;
-import com.myocean.global.auth.LoginMember;
+import com.myocean.global.security.userdetails.CustomUserDetails;
+import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.exception.GeneralException;
-import com.myocean.response.status.ErrorStatus;
 import com.myocean.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Tag(name = "Friend", description = "친구 관리 API")
 @Slf4j

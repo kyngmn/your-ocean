@@ -12,12 +12,14 @@ import com.myocean.domain.user.service.UserService;
 import com.myocean.domain.user.enums.AiStatus;
 import com.myocean.domain.gamemanagement.entity.GameSession;
 import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
+import com.myocean.global.enums.BigCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -125,15 +127,53 @@ public class Big5SchedulerService {
 
 
     private void createUserPersona(Integer userId, Big5Averages averages) {
-        UserPersona persona = UserPersona.builder()
-                .userId(userId)
-                .userO(averages.o)
-                .userC(averages.c)
-                .userE(averages.e)
-                .userA(averages.a)
-                .userN(averages.n)
-                .build();
-        userPersonaRepository.save(persona);
+        List<UserPersona> personas = new ArrayList<>();
+
+        // 각 BigCode별로 UserPersona 생성 (null 값 제외)
+        if (averages.o != null) {
+            personas.add(UserPersona.builder()
+                    .userId(userId)
+                    .bigCode(BigCode.O)
+                    .score(averages.o.shortValue())
+                    .build());
+        }
+
+        if (averages.c != null) {
+            personas.add(UserPersona.builder()
+                    .userId(userId)
+                    .bigCode(BigCode.C)
+                    .score(averages.c.shortValue())
+                    .build());
+        }
+
+        if (averages.e != null) {
+            personas.add(UserPersona.builder()
+                    .userId(userId)
+                    .bigCode(BigCode.E)
+                    .score(averages.e.shortValue())
+                    .build());
+        }
+
+        if (averages.a != null) {
+            personas.add(UserPersona.builder()
+                    .userId(userId)
+                    .bigCode(BigCode.A)
+                    .score(averages.a.shortValue())
+                    .build());
+        }
+
+        if (averages.n != null) {
+            personas.add(UserPersona.builder()
+                    .userId(userId)
+                    .bigCode(BigCode.N)
+                    .score(averages.n.shortValue())
+                    .build());
+        }
+
+        // 모든 페르소나 저장
+        userPersonaRepository.saveAll(personas);
+        log.info("Created {} UserPersona records for user: {}", personas.size(), userId);
+
         reportService.saveFinalReport(userId, averages);
 
         // User AI Status를 GENERATED로 업데이트

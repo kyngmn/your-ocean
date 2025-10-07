@@ -10,6 +10,7 @@ import com.myocean.domain.user.entity.Actor;
 import com.myocean.domain.user.enums.ActorKind;
 import com.myocean.domain.user.repository.ActorRepository;
 import com.myocean.global.ai.AiClientService;
+import com.myocean.global.enums.BigCode;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -133,7 +134,7 @@ public class DiaryChatService {
                 });
     }
 
-    private Actor findOrCreatePersonaActorByBigCode(Integer userId, com.myocean.domain.survey.enums.BigCode bigCode) {
+    private Actor findOrCreatePersonaActorByBigCode(Integer userId, com.myocean.global.enums.BigCode bigCode) {
         // 간단히 BigCode별로 구분되는 PERSONA Actor 생성/조회
         // 실제로는 더 복잡한 로직이 필요할 수 있지만, 일단 기본 PERSONA Actor 사용
         return findOrCreatePersonaActor(userId);
@@ -159,7 +160,7 @@ public class DiaryChatService {
                 }
 
                 // BigCode 매핑
-                com.myocean.domain.survey.enums.BigCode bigCode =
+                BigCode bigCode =
                     com.myocean.global.ai.util.Big5AgentMapper.mapAgentNameToBigCode(agentName);
 
                 if (bigCode == null) {

@@ -25,6 +25,7 @@ public enum ErrorStatus {
     NICKNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "USER4004", "이미 사용 중인 닉네임입니다."),
     NICKNAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST, "USER4005", "닉네임 형식이 올바르지 않습니다. 2-10글자, 한글/영문/숫자만 가능합니다."),
     NICKNAME_EMPTY(HttpStatus.BAD_REQUEST, "USER4006", "닉네임을 입력해주세요."),
+    USER_UPDATE_EMPTY(HttpStatus.BAD_REQUEST, "USER4007", "닉네임 또는 프로필 이미지 중 하나는 필수입니다."),
     _NOT_IMPLEMENTED(HttpStatus.NOT_IMPLEMENTED, "COMMON501", "아직 구현되지 않은 기능입니다."),
     /*
     Auth

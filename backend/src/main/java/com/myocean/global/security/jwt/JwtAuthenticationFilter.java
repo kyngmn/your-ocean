@@ -1,4 +1,4 @@
-package com.myocean.global.auth;
+package com.myocean.global.security.jwt;
 
 import com.myocean.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
