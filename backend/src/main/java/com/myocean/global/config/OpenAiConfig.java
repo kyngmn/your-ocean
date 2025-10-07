@@ -11,7 +11,7 @@ public class OpenAiConfig {
     @Value("${openai.api.key:your-openai-api-key}")
     private String apiKey;
 
-    @Value("${openai.api.url:https://gms.ssafy.io/gmsapi/api.openai.com/v1}")
+    @Value("${openai.api.url:https://api.openai.com/v1}")
     private String apiUrl;
 
     @Value("${openai.model:gpt-4o}")

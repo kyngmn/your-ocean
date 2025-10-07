@@ -5,7 +5,7 @@ import com.myocean.domain.user.dto.response.UserResponse;
 import com.myocean.domain.user.dto.response.GameCountResponse;
 import com.myocean.domain.user.service.UserPersonaService;
 import com.myocean.domain.user.service.UserService;
-import com.myocean.domain.user.service.GameCountService;
+import com.myocean.domain.user.service.UserGameCountService;
 import com.myocean.global.openai.dailymessage.dto.DailyMessageResponse;
 import com.myocean.global.openai.dailymessage.service.DailyMessageService;
 import com.myocean.global.security.userdetails.CustomUserDetails;
@@ -29,7 +29,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserPersonaService userPersonaService;
-    private final GameCountService gameCountService;
+    private final UserGameCountService userGameCountService;
     private final DailyMessageService dailyMessageService;
 
     @Operation(summary = "내 프로필 조회", description = "쿠키 기반 인증으로 현재 로그인한 사용자 정보를 조회합니다.")
@@ -102,7 +102,7 @@ public class UserController {
             @LoginMember CustomUserDetails userDetails
     ) {
         Integer userId = userDetails.getUserId();
-        GameCountResponse gameCountResponse = gameCountService.getGameCountResponse(userId);
+        GameCountResponse gameCountResponse = userGameCountService.getGameCountResponse(userId);
         return ApiResponse.onSuccess(gameCountResponse);
     }
 

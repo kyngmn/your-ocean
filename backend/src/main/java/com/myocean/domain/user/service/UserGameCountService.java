@@ -13,7 +13,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GameCountService {
+public class UserGameCountService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -43,7 +43,6 @@ public class GameCountService {
             Object count = rawCounts.get(gameType.name());
             gameCounts.put(gameType.name(), count != null ? ((Number) count).intValue() : 0);
         }
-
         return gameCounts;
     }
 

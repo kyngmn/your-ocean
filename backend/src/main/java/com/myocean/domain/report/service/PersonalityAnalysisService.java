@@ -1,6 +1,5 @@
-package com.myocean.domain.big5.service;
+package com.myocean.domain.report.service;
 
-import com.myocean.domain.report.service.ReportService;
 import com.myocean.global.openai.personality.service.PersonalityComparisonService;
 import com.myocean.global.openai.personality.dto.PersonalityComparisonRequest;
 import com.myocean.global.openai.personality.dto.PersonalityInsightsResponse;

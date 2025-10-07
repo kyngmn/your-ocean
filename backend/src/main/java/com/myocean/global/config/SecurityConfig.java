@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/login.html", "/login").permitAll()
                 .requestMatchers("/api/v1/survey-responses/**").permitAll()
                 .requestMatchers("/api/v1/users/check-nickname").permitAll()
+                .requestMatchers("/api/v1/users/daily-message").permitAll()
                 .requestMatchers("/api/v1/**").authenticated()
                 .anyRequest().authenticated()
             )
