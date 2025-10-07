@@ -54,6 +54,8 @@ jwt:
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  survey:
+    page-size: 5
 # AI 서버 설정
 ai:
   server:
