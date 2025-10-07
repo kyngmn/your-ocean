@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -65,6 +66,25 @@ public class GlobalExceptionHandler {
                         ErrorStatus.BAD_REQUEST,
                         errorMessages
                 ));
+    }
+
+    // game enum type 파싱 실패
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex
+    ) {
+        log.error("Invalid request body: {}", ex.getMessage());
+
+        // enum 파싱 실패 검사
+        if (ex.getMessage() != null && ex.getMessage().contains("GameType")) {
+            return ResponseEntity
+                    .status(ErrorStatus.INVALID_GAME_TYPE.getHttpStatus())
+                    .body(ApiResponse.onFailure(ErrorStatus.INVALID_GAME_TYPE, null));
+        }
+
+        return ResponseEntity
+                .status(ErrorStatus.BAD_REQUEST.getHttpStatus())
+                .body(ApiResponse.onFailure(ErrorStatus.BAD_REQUEST, "잘못된 요청 형식입니다."));
     }
 
     private List<String> getValidationErrorMessages(MethodArgumentNotValidException ex) {

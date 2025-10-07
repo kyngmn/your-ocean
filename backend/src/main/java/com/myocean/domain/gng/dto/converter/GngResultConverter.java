@@ -1,6 +1,6 @@
 package com.myocean.domain.gng.dto.converter;
 
-import com.myocean.domain.gamemanagement.dto.response.GameGngResultResponse;
+import com.myocean.domain.gng.dto.response.GameGngResultResponse;
 import com.myocean.domain.gng.entity.GameGngResult;
 
 public class GngResultConverter {

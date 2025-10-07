@@ -1,6 +1,6 @@
 package com.myocean.domain.ug.dto.converter;
 
-import com.myocean.domain.gamemanagement.dto.response.GameUgResultResponse;
+import com.myocean.domain.ug.dto.response.GameUgResultResponse;
 import com.myocean.domain.ug.entity.GameUgResult;
 
 public class UgResultConverter {

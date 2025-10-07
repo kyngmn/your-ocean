@@ -1,9 +1,10 @@
-package com.myocean.domain.gamemanagement.entity;
+package com.myocean.domain.gamesession.entity;
 
-import com.myocean.domain.gamemanagement.enums.GameType;
+import com.myocean.domain.gamesession.enums.GameType;
 import com.myocean.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.AccessLevel;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user", "gameSessionResult"})
+@ToString(exclude = {"user"})
 @EqualsAndHashCode(of = "id")
 public class GameSession {
 
@@ -34,6 +35,7 @@ public class GameSession {
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt;
 
+    @Setter(AccessLevel.PRIVATE)  // Setter를 private으로 제한
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
 
@@ -41,6 +43,8 @@ public class GameSession {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    @OneToOne(mappedBy = "gameSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private GameSessionResult gameSessionResult;
+    public void finish() {
+        if (this.finishedAt != null) { throw new IllegalStateException("게임 세션은 이미 종료"); }
+        this.finishedAt = LocalDateTime.now();
+    }
 }

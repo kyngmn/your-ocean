@@ -1,7 +1,7 @@
 package com.myocean.domain.bart.entity;
 
 import com.myocean.domain.bart.enums.BalloonColor;
-import com.myocean.domain.gamemanagement.entity.GameSession;
+import com.myocean.domain.gamesession.entity.GameSession;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

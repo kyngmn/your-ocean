@@ -1,7 +1,7 @@
 package com.myocean.domain.gng.service;
 
-import com.myocean.domain.gamemanagement.entity.GameSession;
-import com.myocean.domain.gamemanagement.repository.GameSessionRepository;
+import com.myocean.domain.gamesession.entity.GameSession;
+import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.gng.dto.request.GngResponseCreateRequest;
 import com.myocean.domain.gng.entity.GameGngResponse;
 import com.myocean.domain.gng.repository.GameGngResponseRepository;
@@ -36,7 +36,7 @@ public class GngService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
 
         // GNG 게임인지 검증
-        if (gameSession.getGameType() != com.myocean.domain.gamemanagement.enums.GameType.GNG) {
+        if (gameSession.getGameType() != com.myocean.domain.gamesession.enums.GameType.GNG) {
             throw new GeneralException(ErrorStatus.GNG_SESSION_NOT_GNG_GAME);
         }
 

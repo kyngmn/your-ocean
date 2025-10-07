@@ -3,7 +3,6 @@ package com.myocean.domain.big5.service;
 import com.myocean.domain.big5.entity.Big5Result;
 import com.myocean.domain.big5.enums.Big5SourceType;
 import com.myocean.domain.big5.repository.Big5ResultRepository;
-import com.myocean.domain.ug.entity.GameUgResult;
 import com.myocean.domain.ug.entity.GameUgResponse;
 import com.myocean.domain.ug.entity.GameUgOrder;
 import com.myocean.domain.ug.repository.GameUgResultRepository;
@@ -280,7 +279,7 @@ public class Big5UGCalculationService {
         try {
             // 이미 해당 UG 세션에 대한 Big5 결과가 있는지 확인
             List<Big5Result> existingResults = big5ResultRepository
-                    .findByUserIdAndSourceType(userId, Big5SourceType.GAME);
+                    .findByUserIdAndSourceType(userId, Big5SourceType.GAME_SESSION);
             
             boolean alreadyExists = existingResults.stream()
                     .anyMatch(r -> r.getSourceId().equals(sessionId));
@@ -288,7 +287,7 @@ public class Big5UGCalculationService {
             if (!alreadyExists) {
                 Big5Result big5Result = Big5Result.builder()
                         .userId(userId)
-                        .sourceType(Big5SourceType.GAME)
+                        .sourceType(Big5SourceType.GAME_SESSION)
                         .sourceId(sessionId)
                         .resultE(scores.getExtraversion())
                         .resultA(scores.getAgreeableness())
