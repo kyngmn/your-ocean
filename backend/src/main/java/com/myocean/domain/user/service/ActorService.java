@@ -82,8 +82,6 @@ public class ActorService {
                 .userE(50)  // Extraversion
                 .userN(50)  // Neuroticism
                 .userO(100) // Openness
-                .createdAt(now)
-                .updatedAt(now)
                 .build());
 
         // 2. 성실성 중심 페르소나 (C=100, 나머지=50)
@@ -94,8 +92,6 @@ public class ActorService {
                 .userE(50)
                 .userN(50)
                 .userO(50)
-                .createdAt(now)
-                .updatedAt(now)
                 .build());
 
         // 3. 외향성 중심 페르소나 (E=100, 나머지=50)
@@ -106,8 +102,6 @@ public class ActorService {
                 .userE(100)
                 .userN(50)
                 .userO(50)
-                .createdAt(now)
-                .updatedAt(now)
                 .build());
 
         // 4. 친화성 중심 페르소나 (A=100, 나머지=50)
@@ -118,8 +112,6 @@ public class ActorService {
                 .userE(50)
                 .userN(50)
                 .userO(50)
-                .createdAt(now)
-                .updatedAt(now)
                 .build());
 
         // 5. 신경성 중심 페르소나 (N=100, 나머지=50)
@@ -130,8 +122,6 @@ public class ActorService {
                 .userE(50)
                 .userN(100)
                 .userO(50)
-                .createdAt(now)
-                .updatedAt(now)
                 .build());
 
         return userPersonaRepository.saveAll(personas);
