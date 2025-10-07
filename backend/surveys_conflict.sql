@@ -121,9 +121,9 @@ INSERT INTO surveys (big_five_code_id, is_reverse, content) VALUES
 ((SELECT id FROM big_five_codes WHERE small_code='C6' LIMIT 1), true,  '나는 일을 성급하게 처리하는 편이다.'),
 ((SELECT id FROM big_five_codes WHERE small_code='C6' LIMIT 1), true,  '나는 깊이 생각하지 않고 행동하는 편이다.');
 
--- survey_responses 데이터는 테스트 데이터로 간단히 삽입
-INSERT INTO survey_responses (survey_id, user_id, value, started_at)
+-- survey_answers 데이터는 테스트 데이터로 간단히 삽입
+INSERT INTO survey_answers (survey_id, user_id, value, started_at)
 SELECT id, 1, (RANDOM() * 4 + 1)::int, NOW() FROM surveys;
 
-INSERT INTO survey_responses (survey_id, user_id, value, started_at)
+INSERT INTO survey_answers (survey_id, user_id, value, started_at)
 SELECT id, 2, (RANDOM() * 4 + 1)::int, NOW() FROM surveys;

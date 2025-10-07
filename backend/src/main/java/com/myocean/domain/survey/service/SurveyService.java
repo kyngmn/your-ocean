@@ -1,11 +1,12 @@
 package com.myocean.domain.survey.service;
 
-import com.myocean.domain.survey.dto.converter.SurveyConverter;
+import com.myocean.domain.survey.converter.SurveyConverter;
 import com.myocean.domain.survey.dto.response.SurveyListResponse;
 import com.myocean.domain.survey.dto.response.SurveyResponse;
 import com.myocean.domain.survey.entity.Survey;
 import com.myocean.domain.survey.repository.SurveyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +21,12 @@ import java.util.List;
 public class SurveyService {
 
     private final SurveyRepository surveyRepository;
-    private static final int PAGE_SIZE = 5;
+
+    @Value("${app.survey.page-size}")
+    private int pageSize;
 
     public SurveyListResponse getSurveys(int page) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page, pageSize);
         Page<Survey> surveyPage = surveyRepository.findAll(pageable);
 
         List<SurveyResponse> surveyResponses = surveyPage.getContent().stream()

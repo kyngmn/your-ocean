@@ -212,7 +212,7 @@ INSERT INTO surveys VALUES
 -- User 1: 120개 전부 응답
 -- 값 패턴(보기 자연스럽게 분포): 4,3,5,2,1 반복
 -- =========================
-INSERT INTO survey_responses (survey_id, user_id, value, started_at) VALUES
+INSERT INTO survey_answers (survey_id, user_id, value, started_at) VALUES
 (1, 1, 4, NOW()), (2, 1, 3, NOW()), (3, 1, 5, NOW()), (4, 1, 2, NOW()), (5, 1, 1, NOW()),
 (6, 1, 4, NOW()), (7, 1, 3, NOW()), (8, 1, 5, NOW()), (9, 1, 2, NOW()), (10, 1, 1, NOW()),
 (11, 1, 4, NOW()), (12, 1, 3, NOW()), (13, 1, 5, NOW()), (14, 1, 2, NOW()), (15, 1, 1, NOW()),
@@ -242,7 +242,7 @@ INSERT INTO survey_responses (survey_id, user_id, value, started_at) VALUES
 -- User 2: 120개 전부 응답
 -- 값 패턴(다른 분포): 2,5,3,4,1 반복
 -- =========================
-INSERT INTO survey_responses (survey_id, user_id, value, started_at) VALUES
+INSERT INTO survey_answers (survey_id, user_id, value, started_at) VALUES
 (1, 2, 2, NOW()), (2, 2, 5, NOW()), (3, 2, 3, NOW()), (4, 2, 4, NOW()), (5, 2, 1, NOW()),
 (6, 2, 2, NOW()), (7, 2, 5, NOW()), (8, 2, 3, NOW()), (9, 2, 4, NOW()), (10, 2, 1, NOW()),
 (11, 2, 2, NOW()), (12, 2, 5, NOW()), (13, 2, 3, NOW()), (14, 2, 4, NOW()), (15, 2, 1, NOW()),
@@ -271,7 +271,7 @@ INSERT INTO survey_responses (survey_id, user_id, value, started_at) VALUES
 -- =========================
 -- User 3: 일부만 응답 (1~20번만)
 -- =========================
-INSERT INTO survey_responses (survey_id, user_id, value, started_at) VALUES
+INSERT INTO survey_answers (survey_id, user_id, value, started_at) VALUES
 (1, 3, 3, NOW()), (2, 3, 2, NOW()), (3, 3, 4, NOW()), (4, 3, 5, NOW()), (5, 3, 2, NOW()),
 (6, 3, 4, NOW()), (7, 3, 1, NOW()), (8, 3, 3, NOW()), (9, 3, 5, NOW()), (10, 3, 4, NOW()),
 (11, 3, 2, NOW()), (12, 3, 5, NOW()), (13, 3, 3, NOW()), (14, 3, 2, NOW()), (15, 3, 4, NOW()),

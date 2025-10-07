@@ -4,7 +4,7 @@ import com.myocean.domain.friendchat.repository.FriendInvitationRepository;
 import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.diary.repository.DiaryRepository;
 import com.myocean.domain.report.repository.ReportRepository;
-import com.myocean.domain.survey.repository.SurveyResponseRepository;
+import com.myocean.domain.survey.repository.SurveyAnswerRepository;
 import com.myocean.domain.big5.repository.Big5ResultRepository;
 import com.myocean.domain.friendchat.repository.FriendRepository;
 import com.myocean.domain.mychat.repository.MyChatRepository;
@@ -35,7 +35,7 @@ public class UserService {
     private final GameSessionRepository gameSessionRepository;
     private final DiaryRepository diaryRepository;
     private final ReportRepository reportRepository;
-    private final SurveyResponseRepository surveyResponseRepository;
+    private final SurveyAnswerRepository surveyAnswerRepository;
     private final Big5ResultRepository big5ResultRepository;
     private final FriendRepository friendRepository;
     private final MyChatRepository myChatRepository;
@@ -139,7 +139,7 @@ public class UserService {
         gameSessionRepository.deleteByUserId(userId);
         diaryRepository.deleteByUserId(userId);
         reportRepository.deleteByUserId(userId);
-        surveyResponseRepository.deleteByUserId(userId);
+        surveyAnswerRepository.deleteByUserId(userId);
         big5ResultRepository.deleteByUserId(userId);
         friendRepository.deleteByUserIdOrFriendId(userId);
         myChatRepository.deleteByUserId(userId);

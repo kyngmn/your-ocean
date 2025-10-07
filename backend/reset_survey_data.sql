@@ -1,7 +1,7 @@
 -- Survey 데이터 완전 초기화
 
 -- 1. 기존 데이터 삭제
-DELETE FROM survey_responses;
+DELETE FROM survey_answers;
 DELETE FROM surveys;
 DELETE FROM big_five_codes;
 
