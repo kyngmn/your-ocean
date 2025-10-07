@@ -1,5 +1,6 @@
 package com.myocean.domain.report.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.myocean.domain.report.dto.converter.ReportConverter;
@@ -7,6 +8,7 @@ import com.myocean.domain.report.dto.response.ReportResponse;
 import com.myocean.domain.report.entity.Report;
 import com.myocean.domain.report.enums.ReportType;
 import com.myocean.domain.report.repository.ReportRepository;
+import com.myocean.global.openai.personality.dto.PersonalityInsightsResponse;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -57,6 +60,34 @@ public class ReportService {
         }
     }
 
+    public Map<String, Integer> getSelfBig5Scores(Integer userId) {
+        try {
+            Report report = reportRepository.findByUserIdAndReportType(userId, ReportType.SELF)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.REPORT_NOT_FOUND));
+
+            // Self 리포트 JSON 파싱
+            JsonNode rootNode = objectMapper.readTree(report.getContent());
+            JsonNode scoresNode = rootNode.get("bigFiveScores");
+
+            if (scoresNode == null) {
+                throw new GeneralException(ErrorStatus.REPORT_NOT_FOUND);
+            }
+
+            // 30개 세부 지표 점수 추출
+            Map<String, Integer> scores = new HashMap<>();
+
+            // 모든 필드를 순회하면서 점수 추출
+            scoresNode.fieldNames().forEachRemaining(fieldName -> {
+                scores.put(fieldName, scoresNode.get(fieldName).asInt());
+            });
+
+            return scores;
+
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus.REPORT_NOT_FOUND, e);
+        }
+    }
+
     @Transactional
     public Long saveSelfReport(Integer userId, Map<String, Integer> bigFiveScores) {
         String json = buildSelfReportJson(bigFiveScores);
@@ -70,18 +101,42 @@ public class ReportService {
         return saved.getId();
     }
 
+
     @Transactional
-    public Long saveFinalReport(Integer userId, Object averages) {
-        String json = buildFinalReportJson(averages);
-        Report saved = reportRepository.save(
-                Report.builder()
-                        .userId(userId)
-                        .reportType(ReportType.FINAL)
-                        .content(json)
-                        .build()
-        );
-        return saved.getId();
+    public void saveFinalReportWithInsights(Integer userId, Map<String, Integer> gameScores, PersonalityInsightsResponse insights) {
+        try {
+            // FINAL 리포트 JSON 구성 (기존 점수 + insights)
+            ObjectNode rootNode = objectMapper.createObjectNode();
+
+            // bigFiveScores 추가
+            ObjectNode scoresNode = rootNode.putObject("bigFiveScores");
+            gameScores.forEach(scoresNode::put);
+
+            // headline 추가
+            rootNode.put("headline", insights.getHeadline());
+
+            // insights 추가
+            ObjectNode insightsNode = rootNode.putObject("insights");
+            insightsNode.put("main", insights.getInsights().getMain());
+            insightsNode.put("gap", insights.getInsights().getGap());
+            insightsNode.put("strength", insights.getInsights().getStrength());
+
+            String jsonContent = objectMapper.writeValueAsString(rootNode);
+
+            // Reports 테이블에 저장
+            Report report = Report.builder()
+                    .userId(userId)
+                    .reportType(ReportType.FINAL)
+                    .content(jsonContent)
+                    .build();
+
+            reportRepository.save(report);
+
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus.INTERNAL_SERVER_ERROR, e);
+        }
     }
+
 
     private String buildSelfReportJson(Map<String, Integer> bigFiveScores) {
         try {
@@ -97,37 +152,6 @@ public class ReportService {
             meta.put("scaleMin", 1);
             meta.put("scaleMax", 5);
             meta.put("calculationMethod", "database_based");
-            meta.put("version", "2.0");
-
-            return objectMapper.writeValueAsString(root);
-        } catch (Exception e) {
-            throw new GeneralException(ErrorStatus.REPORT_NOT_FOUND);
-        }
-    }
-
-    private String buildFinalReportJson(Object averages) {
-        try {
-            ObjectNode root = objectMapper.createObjectNode();
-            ObjectNode scores = root.putObject("bigFiveScores");
-
-            // reflection으로 averages 객체의 필드 값 추출
-            java.lang.reflect.Field oField = averages.getClass().getDeclaredField("o");
-            java.lang.reflect.Field cField = averages.getClass().getDeclaredField("c");
-            java.lang.reflect.Field eField = averages.getClass().getDeclaredField("e");
-            java.lang.reflect.Field aField = averages.getClass().getDeclaredField("a");
-            java.lang.reflect.Field nField = averages.getClass().getDeclaredField("n");
-
-            oField.setAccessible(true);
-            cField.setAccessible(true);
-            eField.setAccessible(true);
-            aField.setAccessible(true);
-            nField.setAccessible(true);
-
-            scores.put("O", (Integer) oField.get(averages));
-            scores.put("C", (Integer) cField.get(averages));
-            scores.put("E", (Integer) eField.get(averages));
-            scores.put("A", (Integer) aField.get(averages));
-            scores.put("N", (Integer) nField.get(averages));
 
             return objectMapper.writeValueAsString(root);
         } catch (Exception e) {

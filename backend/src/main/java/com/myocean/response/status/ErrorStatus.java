@@ -53,6 +53,20 @@ public enum ErrorStatus {
     GAME_SESSION_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "GAME4002", "이미 종료된 게임 세션입니다."),
 
     /*
+    BART Game
+     */
+    BART_ROUND_NOT_FOUND(HttpStatus.NOT_FOUND, "BART4000", "BART 게임 라운드를 찾을 수 없습니다."),
+    BART_ROUND_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "BART4001", "이미 종료된 BART 게임 라운드입니다."),
+    BART_ROUND_CREATION_DATA_MISSING(HttpStatus.BAD_REQUEST, "BART4002", "새 라운드 생성을 위한 데이터가 부족합니다. (색상 및 터지는 지점 필요)"),
+    BART_CLICK_INDEX_DUPLICATE(HttpStatus.BAD_REQUEST, "BART4003", "이미 존재하는 클릭 인덱스입니다."),
+    BART_BALLOON_ALREADY_POPPED(HttpStatus.BAD_REQUEST, "BART4004", "풍선이 이미 터져서 더 이상 클릭할 수 없습니다."),
+    BART_LOGIC_INCONSISTENT(HttpStatus.BAD_REQUEST, "BART4005", "클릭 수와 풍선 터짐 상태가 일치하지 않습니다."),
+
+    /*
+    UG Game
+     */
+    UG_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "UG4000", "UG 게임 오더를 찾을 수 없습니다."),
+    /*
     Report
      */
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT4040", "요청한 리포트를 찾을 수 없습니다."),
@@ -117,6 +131,13 @@ public enum ErrorStatus {
      */
     SURVEY_INVALID_RESPONSE_COUNT(HttpStatus.BAD_REQUEST, "SURVEY4001", "설문 응답 개수가 올바르지 않습니다."),
     SURVEY_REPORT_JSON_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SURVEY5002", "리포트 JSON 직렬화에 실패했습니다."),
+
+    /*
+    OpenAI
+     */
+    OPENAI_API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OPENAI5000", "OpenAI API 호출에 실패했습니다."),
+    OPENAI_RESPONSE_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, "OPENAI5001", "OpenAI API 응답이 비어있습니다."),
+    OPENAI_JSON_PARSE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OPENAI5002", "OpenAI 응답 JSON 파싱에 실패했습니다."),
 
     /*
     General

@@ -37,7 +37,8 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .servers(List.of(
-                        new Server().url("https://j13a303.p.ssafy.io").description("SSAFY Production Server"),
+                        new Server().url("https://be.myocean.cloud").description("Production Server"),
+                        new Server().url("https://j13a303.p.ssafy.io").description("SSAFY Server"),
                         new Server().url("http://localhost:8080").description("Local Development Server")
                 ))
                 .info(new Info()

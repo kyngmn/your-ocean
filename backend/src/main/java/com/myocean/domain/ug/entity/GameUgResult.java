@@ -28,7 +28,6 @@ public class GameUgResult {
     private LocalDateTime finishedAt;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
-    @MapsId
+    @JoinColumn(name = "session_id", insertable = false, updatable = false)
     private GameSession gameSession;
 }

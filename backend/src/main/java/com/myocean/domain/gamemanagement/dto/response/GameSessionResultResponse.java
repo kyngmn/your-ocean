@@ -26,29 +26,15 @@ public record GameSessionResultResponse(
         @Schema(description = "종료 시간", example = "2024-01-15T11:00:00")
         LocalDateTime finishedAt,
 
-        @Schema(description = "개방성 점수", example = "75")
-        Integer resultO,
-
-        @Schema(description = "성실성 점수", example = "82")
-        Integer resultC,
-
-        @Schema(description = "외향성 점수", example = "68")
-        Integer resultE,
-
-        @Schema(description = "친화성 점수", example = "90")
-        Integer resultA,
-
-        @Schema(description = "신경성 점수", example = "45")
-        Integer resultN
+        @Schema(description = "게임 결과 데이터 (게임별로 다른 구조)")
+        Object gameResult
 ) {
     public static GameSessionResultResponse from(Long sessionId, Integer userId, GameType gameType,
                                                SessionType sessionType, LocalDateTime startedAt,
-                                               LocalDateTime finishedAt, Integer resultO, Integer resultC,
-                                               Integer resultE, Integer resultA, Integer resultN) {
+                                               LocalDateTime finishedAt, Object gameResult) {
         return new GameSessionResultResponse(
                 sessionId, userId, gameType, sessionType,
-                startedAt, finishedAt,
-                resultO, resultC, resultE, resultA, resultN
+                startedAt, finishedAt, gameResult
         );
     }
 }

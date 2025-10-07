@@ -1,5 +1,7 @@
 package com.myocean.domain.ug.entity;
 
+import com.myocean.domain.ug.enums.MoneySize;
+import com.myocean.domain.ug.enums.PersonaType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,12 +32,4 @@ public class GameUgOrder {
 
     @Column(nullable = false)
     private Integer rate;
-
-    public enum PersonaType {
-        FAMILY, FRIEND, STRANGER
-    }
-
-    public enum MoneySize {
-        LARGE, SMALL
-    }
 }

@@ -1,6 +1,6 @@
 package com.myocean.domain.bart.entity;
 
-import com.myocean.domain.gamemanagement.entity.GameSession;
+// import com.myocean.domain.gamemanagement.entity.GameSession; // 제거됨
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = "gameSession")
+@ToString
 @EqualsAndHashCode(of = "sessionId")
 public class GameBartResult {
 
@@ -45,8 +45,5 @@ public class GameBartResult {
     @Column(name = "computed_at", nullable = false)
     private LocalDateTime computedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
-    @MapsId
-    private GameSession gameSession;
+    // GameSession 연관관계 제거 - 단순 외래키로 처리
 }

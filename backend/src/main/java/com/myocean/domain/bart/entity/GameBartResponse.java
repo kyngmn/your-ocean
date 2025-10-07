@@ -1,5 +1,6 @@
 package com.myocean.domain.bart.entity;
 
+import com.myocean.domain.bart.enums.BalloonColor;
 import com.myocean.domain.gamemanagement.entity.GameSession;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +31,7 @@ public class GameBartResponse {
     private Integer roundIndex;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "color", nullable = false)
     private BalloonColor color;
 
     @Column(name = "popping_point", nullable = false)
@@ -55,8 +56,4 @@ public class GameBartResponse {
 
     @OneToMany(mappedBy = "gameBartResponse", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<GameBartClick> gameBartClicks;
-
-    public enum BalloonColor {
-        RED, BLUE, GREEN
-    }
 }

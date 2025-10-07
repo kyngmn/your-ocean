@@ -59,7 +59,7 @@ public class FileUploadService {
 
     public String getFileUrl(String objectName) {
         // nginx 프록시를 통한 URL 생성
-        return "https://j13a303.p.ssafy.io/files/" + objectName;
+        return "https://be.myocean.cloud/files/" + objectName;
     }
 
     private void ensureBucketExists() throws Exception {

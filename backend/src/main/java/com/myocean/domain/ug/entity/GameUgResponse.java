@@ -24,6 +24,9 @@ public class GameUgResponse {
     @Column(name = "session_id", nullable = false)
     private Long sessionId;
 
+    @Column(nullable = false)
+    private Integer round;
+
     @Column(name = "order_id")
     private Long orderId;
 
@@ -33,6 +36,9 @@ public class GameUgResponse {
     @Column(name = "is_accepted", nullable = false)
     @Builder.Default
     private Boolean isAccepted = true;
+
+    @Column(name = "proposal_rate")
+    private Integer proposalRate;
 
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;

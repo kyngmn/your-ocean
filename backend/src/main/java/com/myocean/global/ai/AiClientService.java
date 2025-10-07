@@ -30,7 +30,8 @@ public class AiClientService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
+            headers.set("User-Id", userId.toString());
+
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("user_id", userId);
             requestBody.put("message", message);
@@ -45,9 +46,18 @@ public class AiClientService {
             
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             
+            String endpoint;
+            if ("diary".equals(chatType)) {
+                endpoint = "/api/v1/diaries";
+            } else if ("friend".equals(chatType)) {
+                endpoint = "/api/v1/friend-chat/send";
+            } else {
+                endpoint = "/api/v1/my-chat/send";
+            }
+
             ResponseEntity<Map> response = restTemplate.postForEntity(
-                    aiServerUrl + "/ai/chat", 
-                    entity, 
+                    aiServerUrl + endpoint,
+                    entity,
                     Map.class
             );
 
@@ -77,7 +87,8 @@ public class AiClientService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
+            headers.set("User-Id", userId.toString());
+
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("user_id", userId);
             requestBody.put("diary_id", diaryId);
@@ -85,31 +96,65 @@ public class AiClientService {
             requestBody.put("title", title);
             
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-            
+
             ResponseEntity<Map> response = restTemplate.postForEntity(
-                    aiServerUrl + "/ai/analyze/diary", 
-                    entity, 
+                    aiServerUrl + "/ai/analyze/diary",
+                    entity,
                     Map.class
             );
 
             if (response.getBody() != null && (Boolean) response.getBody().get("success")) {
-                log.info("AI 다이어리 분석 성공 - userId: {}", userId);
                 return response.getBody();
             } else {
-                log.error("AI 다이어리 분석 실패 - 응답이 비어있거나 실패");
                 throw new RuntimeException("AI 분석 실패");
             }
 
         } catch (Exception e) {
-            log.error("AI 서버 호출 중 오류 발생: {}", e.getMessage(), e);
             throw new RuntimeException("AI 서버 연결 실패", e);
+        }
+    }
+
+    public Map<String, Object> analyzeChatMessage(Integer userId, Long messageId, String message) {
+        try {
+            log.info("AI 서버로 채팅 메시지 분석 요청 - userId: {}, messageId: {}", userId, messageId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("User-Id", userId.toString());
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("user_id", userId);
+            requestBody.put("message", message);
+            requestBody.put("chat_type", "my_chat");
+            requestBody.put("message_id", messageId);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    aiServerUrl + "/api/v1/my-chat/send",
+                    entity,
+                    Map.class
+            );
+
+            if (response.getBody() != null) {
+                // AI 서버에서 직접 분석 결과를 반환하므로 success 래핑 추가
+                Map<String, Object> wrappedResponse = new HashMap<>();
+                wrappedResponse.put("success", true);
+                wrappedResponse.put("data", response.getBody());
+                return wrappedResponse;
+            } else {
+                throw new RuntimeException("AI 채팅 분석 실패");
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("AI 채팅 분석 서버 연결 실패", e);
         }
     }
 
     public boolean checkAiServerHealth() {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(
-                    aiServerUrl + "/health", 
+                    aiServerUrl + "/health",
                     String.class
             );
             return response.getStatusCode().is2xxSuccessful();

@@ -27,10 +27,10 @@ public class GameSessionController {
     @Operation(summary = "게임 세션 생성", description = "새로운 게임 세션을 생성합니다.")
     @PostMapping
     public ApiResponse<GameSessionResponse> createGameSession(
-            @LoginMember CustomUserDetails customUserDetails,
+            @LoginMember CustomUserDetails userDetails,
             @Valid @RequestBody GameSessionCreateRequest request) {
 
-        Integer userId = customUserDetails.getUserId();
+        Integer userId = userDetails.getUserId();
         GameSessionResponse response = gameSessionService.createGameSession(userId, request);
         return ApiResponse.onSuccess(response);
     }
@@ -41,7 +41,6 @@ public class GameSessionController {
             @LoginMember CustomUserDetails userDetails,
             @Parameter(description = "세션 ID", required = true, example = "1")
             @PathVariable Long sessionId) {
-
         Integer userId = userDetails.getUserId();
         Object response = gameSessionService.getGameSessionResult(userId, sessionId);
         return ResponseEntity.ok(ApiResponse.onSuccess(response));

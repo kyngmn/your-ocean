@@ -1,6 +1,5 @@
 package com.myocean.domain.mychat.dto;
 
-import com.myocean.domain.mychat.entity.MyChatMessage;
 import com.myocean.domain.user.enums.ActorKind;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -29,17 +28,9 @@ public class MyChatResponse {
     @Schema(description = "발신자 액터 ID", example = "1")
     private Integer senderActorId;
 
+    @Schema(description = "읽음 여부", example = "false")
+    private Boolean isRead;
+
     @Schema(description = "생성 시간")
     private LocalDateTime createdAt;
-
-    public static MyChatResponse from(MyChatMessage chatMessage) {
-        return MyChatResponse.builder()
-                .id(chatMessage.getId())
-                .message(chatMessage.getMessage())
-                .senderKind(chatMessage.getSenderActor() != null ? 
-                           chatMessage.getSenderActor().getKind() : null)
-                .senderActorId(chatMessage.getSenderActorId())
-                .createdAt(chatMessage.getCreatedAt())
-                .build();
-    }
 }
