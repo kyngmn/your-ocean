@@ -1,10 +1,8 @@
 package com.myocean.domain.user.service;
 
 import com.myocean.domain.friendchat.repository.FriendInvitationRepository;
-import com.myocean.domain.gamesession.repository.GameSessionRepository;
 import com.myocean.domain.diary.repository.DiaryRepository;
 import com.myocean.domain.report.repository.ReportRepository;
-import com.myocean.domain.survey.repository.SurveyAnswerRepository;
 import com.myocean.domain.big5.repository.Big5ResultRepository;
 import com.myocean.domain.friendchat.repository.FriendRepository;
 import com.myocean.domain.mychat.repository.MyChatRepository;
@@ -29,13 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserConverter userConverter;
     private final FileUploadService fileUploadService;
     private final FriendInvitationRepository friendInvitationRepository;
-    private final GameSessionRepository gameSessionRepository;
     private final DiaryRepository diaryRepository;
     private final ReportRepository reportRepository;
-    private final SurveyAnswerRepository surveyAnswerRepository;
     private final Big5ResultRepository big5ResultRepository;
     private final FriendRepository friendRepository;
     private final MyChatRepository myChatRepository;
@@ -45,7 +40,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_EXIST));
 
-        return userConverter.toResponse(user);
+        return UserConverter.toResponse(user);
     }
 
     public UserResponse updateUserProfile(Integer userId, String nickname, MultipartFile file) {
@@ -85,7 +80,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         log.info("사용자 프로필 업데이트 완료 - userId: {}", userId);
-        return userConverter.toResponse(savedUser);
+        return UserConverter.toResponse(savedUser);
     }
 
     private void deleteOldProfileImage(User user) {
@@ -136,7 +131,6 @@ public class UserService {
 
         // 연관 데이터 삭제
         friendInvitationRepository.deleteByInviterUserIdOrInviteeUserId(userId, userId);
-        diaryRepository.deleteByUserId(userId);
         reportRepository.deleteByUserId(userId);
         big5ResultRepository.deleteByUserId(userId);
         friendRepository.deleteByUserIdOrFriendId(userId);

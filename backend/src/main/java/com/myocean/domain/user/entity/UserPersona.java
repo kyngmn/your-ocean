@@ -1,5 +1,6 @@
 package com.myocean.domain.user.entity;
 
+import com.myocean.domain.user.listener.PersonaActorCreator;
 import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.global.enums.BigCode;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import lombok.*;
            name = "uq_user_persona",
            columnNames = {"user_id", "big_code"}
        ))
+@EntityListeners(PersonaActorCreator.class)
 @Getter
 @Setter
 @NoArgsConstructor
