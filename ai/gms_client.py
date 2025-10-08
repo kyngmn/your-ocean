@@ -11,33 +11,33 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class GMSClient:
-    """GMS GPT-5-mini API 클라이언트"""
-    
+    """OpenAI API 클라이언트"""
+
     def __init__(self, api_key: Optional[str] = None):
         """
-        GMS 클라이언트 초기화
-        
+        OpenAI 클라이언트 초기화
+
         Args:
-            api_key: GMS API 키 (없으면 환경변수에서 가져옴)
+            api_key: OpenAI API 키 (없으면 환경변수에서 가져옴)
         """
-        self.api_key = api_key or os.getenv('GMS_KEY')
-        self.base_url = "https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions"
-        
+        self.api_key = api_key or os.getenv('OPENAI_API_KEY')
+        self.base_url = "https://api.openai.com/v1/chat/completions"
+
         if not self.api_key:
-            raise ValueError("GMS_KEY 환경변수를 설정하거나 api_key를 제공해주세요!")
+            raise ValueError("OPENAI_API_KEY 환경변수를 설정하거나 api_key를 제공해주세요!")
     
     def chat_completion(
-        self, 
-        messages: List[Dict[str, str]], 
-        max_completion_tokens: int = 500  # 짧게 제한
+        self,
+        messages: List[Dict[str, str]],
+        max_completion_tokens: int = 500
     ) -> str:
         """
-        GPT-5-mini로 채팅 완성
-        
+        OpenAI GPT로 채팅 완성
+
         Args:
             messages: 메시지 리스트 [{"role": "user", "content": "..."}]
             max_completion_tokens: 최대 출력 토큰 수
-            
+
         Returns:
             생성된 응답 텍스트
         """
@@ -45,9 +45,9 @@ class GMSClient:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
-        
+
         data = {
-            "model": "gpt-4.1-nano",
+            "model": "gpt-4o-mini",
             "messages": messages,
             "max_completion_tokens": max_completion_tokens
         }
@@ -83,17 +83,17 @@ class GMSClient:
         return self.chat_completion(messages)
     
     async def chat_completion_async(
-        self, 
-        messages: List[Dict[str, str]], 
+        self,
+        messages: List[Dict[str, str]],
         max_completion_tokens: int = 500
     ) -> str:
         """
-        GPT-5-mini로 비동기 채팅 완성
-        
+        OpenAI GPT로 비동기 채팅 완성
+
         Args:
             messages: 메시지 리스트 [{"role": "user", "content": "..."}]
             max_completion_tokens: 최대 출력 토큰 수
-            
+
         Returns:
             생성된 응답 텍스트
         """
@@ -101,9 +101,9 @@ class GMSClient:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
-        
+
         data = {
-            "model": "gpt-4.1-nano",
+            "model": "gpt-4o-mini",
             "messages": messages,
             "max_completion_tokens": max_completion_tokens
         }
@@ -132,25 +132,25 @@ class GMSClient:
 
 # 테스트용 함수
 def test_gms_client():
-    """GMS 클라이언트 테스트"""
+    """OpenAI 클라이언트 테스트"""
     try:
         client = GMSClient()
-        
-        test_message = "안녕하세요! GMS API 테스트입니다."
+
+        test_message = "안녕하세요! OpenAI API 테스트입니다."
         system_prompt = "당신은 친근한 AI 어시스턴트입니다. 한국어로 답변해주세요."
-        
-        print("🤖 GMS GPT-5-mini 테스트")
+
+        print("🤖 OpenAI GPT 테스트")
         print(f"👤 사용자: {test_message}")
         print("-" * 50)
-        
+
         response = client.simple_chat(test_message, system_prompt)
         print(f"🤖 AI: {response}")
-        
+
         return True
-        
+
     except ValueError as e:
         print(f"⚠️ 설정 오류: {e}")
-        print("💡 GMS_KEY 환경변수를 설정해주세요!")
+        print("💡 OPENAI_API_KEY 환경변수를 설정해주세요!")
         return False
 
 if __name__ == "__main__":
