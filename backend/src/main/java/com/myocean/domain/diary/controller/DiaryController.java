@@ -5,6 +5,7 @@ import com.myocean.domain.diary.dto.response.DiaryCalendarResponse;
 import com.myocean.domain.diary.dto.response.DiaryResponse;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.service.DiaryService;
+import com.myocean.domain.diary.service.DiaryAnalysisStreamService;
 import com.myocean.global.security.userdetails.CustomUserDetails;
 import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
 @Slf4j
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final DiaryAnalysisStreamService streamService;
 
     @Operation(summary = "일기 생성", description = "일기 생성")
     @PostMapping
@@ -82,7 +85,7 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-    @Operation(summary = "다이어리 분석 결과 가져오기", description = "다이어리 분석 결과 조회")
+    @Operation(summary = "다이어리 분석 결과 가져오기", description = "다이어리 분석 결과 조회 (일반)")
     @GetMapping("/{diaryId}/analysis")
     public ApiResponse<DiaryAnalysisResponse> getDiaryAnalysis(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
@@ -91,6 +94,19 @@ public class DiaryController {
         Integer userId = extractUserId(userDetails);
         DiaryAnalysisResponse response = diaryService.getDiaryAnalysis(userId, diaryId);
         return ApiResponse.onSuccess(response);
+    }
+
+    @Operation(summary = "다이어리 분석 결과 스트리밍", description = "SSE를 통해 OCEAN 메시지를 하나씩 스트리밍합니다")
+    @GetMapping(value = "/{diaryId}/analysis/stream", produces = "text/event-stream")
+    public SseEmitter streamDiaryAnalysis(
+            @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
+            @LoginMember CustomUserDetails userDetails
+    ){
+        Integer userId = extractUserId(userDetails);
+        // 권한 확인 (다이어리 소유자인지)
+        diaryService.getDiaryById(userId, diaryId);
+
+        return streamService.streamAnalysisResult(diaryId);
     }
 
     private Integer extractUserId(CustomUserDetails userDetails) {
