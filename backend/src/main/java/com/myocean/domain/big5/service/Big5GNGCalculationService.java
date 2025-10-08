@@ -46,7 +46,7 @@ public class Big5GNGCalculationService {
 
             // Big5Result 엔티티 생성 및 저장
             Big5Result big5Result = Big5Result.builder()
-                    .userId(gameSession.getUserId())
+                    .userId(gameSession.getUser().getId())
                     .sourceType(big5Request.getSourceType())
                     .sourceId(big5Request.getSourceId())
                     .resultO(big5Request.getOpenness())

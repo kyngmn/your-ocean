@@ -24,8 +24,9 @@ public class GameSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"))
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "game_type", nullable = false)
@@ -38,10 +39,6 @@ public class GameSession {
     @Setter(AccessLevel.PRIVATE)  // Setter를 private으로 제한
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private User user;
 
     public void finish() {
         if (this.finishedAt != null) { throw new IllegalStateException("게임 세션은 이미 종료"); }

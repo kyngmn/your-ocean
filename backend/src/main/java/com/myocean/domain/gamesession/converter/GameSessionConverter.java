@@ -8,7 +8,7 @@ public class GameSessionConverter {
     public static GameSessionResponse toResponse(GameSession gameSession) {
         return new GameSessionResponse(
                 gameSession.getId(),
-                gameSession.getUserId(),
+                gameSession.getUser().getId(),
                 gameSession.getGameType(),
                 gameSession.getStartedAt(),
                 gameSession.getFinishedAt(),

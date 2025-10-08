@@ -34,11 +34,12 @@ public class GameSessionService {
     private final GameUgResultRepository gameUgResultRepository;
     private final GameBartResultRepository gameBartResultRepository;
     private final UserGameCountService userGameCountService;
+    private final com.myocean.domain.user.repository.UserRepository userRepository;
 
     @Transactional
     public GameSessionResponse createGameSession(Integer userId, GameSessionCreateRequest request) {
         GameSession gameSession = GameSession.builder()
-                .userId(userId)
+                .user(userRepository.getReferenceById(userId))  // 프록시 객체 사용 (DB 조회 없이 ID만으로 FK 저장)
                 .gameType(request.gameType())
                 .startedAt(LocalDateTime.now())
                 .build();
@@ -66,7 +67,7 @@ public class GameSessionService {
     @Transactional
     public GameSessionResponse finishGameSession(Integer userId, Long sessionId) {
         GameSession gameSession = gameSessionRepository
-                .findByIdAndUserId(sessionId, userId)
+                .findByIdAndUser_Id(sessionId, userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
 
         try {

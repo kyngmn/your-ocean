@@ -19,7 +19,7 @@ public class UserPersonaConverter {
         }
 
         UserPersona firstPersona = personas.get(0);
-        Integer userId = firstPersona.getUserId();
+        Integer userId = firstPersona.getUser().getId();
         Integer id = firstPersona.getId();
 
         // BigCode별 점수 맵 생성

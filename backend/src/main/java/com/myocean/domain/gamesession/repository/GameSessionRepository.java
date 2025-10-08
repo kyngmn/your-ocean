@@ -13,15 +13,15 @@ import java.util.Optional;
 @Repository
 public interface GameSessionRepository extends JpaRepository<GameSession, Long> {
 
-    Optional<GameSession> findByIdAndUserId(Long id, Integer userId);
+    Optional<GameSession> findByIdAndUser_Id(Long id, Integer userId);
 
-    @Query("SELECT gs.gameType FROM GameSession gs WHERE gs.id = :sessionId AND gs.userId = :userId")
+    @Query("SELECT gs.gameType FROM GameSession gs WHERE gs.id = :sessionId AND gs.user.id = :userId")
     GameType findGameTypeBySessionId(@Param("sessionId") Long sessionId, @Param("userId") Integer userId);
 
     @Modifying
-    @Query("DELETE FROM GameSession gs WHERE gs.userId = :userId")
+    @Query("DELETE FROM GameSession gs WHERE gs.user.id = :userId")
     void deleteByUserId(@Param("userId") Integer userId);
 
-    @Query("SELECT COUNT(gs) FROM GameSession gs WHERE gs.userId = :userId AND gs.gameType = :gameType AND gs.finishedAt IS NOT NULL")
+    @Query("SELECT COUNT(gs) FROM GameSession gs WHERE gs.user.id = :userId AND gs.gameType = :gameType AND gs.finishedAt IS NOT NULL")
     Long countCompletedGamesByUserIdAndGameType(@Param("userId") Integer userId, @Param("gameType") GameType gameType);
 }

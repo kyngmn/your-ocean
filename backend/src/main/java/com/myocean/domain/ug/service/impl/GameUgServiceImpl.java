@@ -87,7 +87,7 @@ public class GameUgServiceImpl implements GameUgService {
 
         // 1. 게임 세션 검증
         GameSession gameSession = gameSessionRepository
-                .findByIdAndUserId(sessionId, userId)
+                .findByIdAndUser_Id(sessionId, userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
 
         if (gameSession.getFinishedAt() != null) {
@@ -257,7 +257,7 @@ public class GameUgServiceImpl implements GameUgService {
             log.info("UG result saved OK: sessionId={}, totalEarned={}", saved.getSessionId(), saved.getEarnedAmount());
             
             // UG 결과 저장 후 Big5 지표 계산 및 저장
-            big5UGCalculationService.calculateAndSaveBig5Scores(session.getUserId(), sessionId);
+            big5UGCalculationService.calculateAndSaveBig5Scores(session.getUser().getId(), sessionId);
             
             return saved;
         } catch (Exception e) {
@@ -389,7 +389,7 @@ public class GameUgServiceImpl implements GameUgService {
     private Integer calculateGameDayFromSession(Long sessionId) {
         GameSession session = gameSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
-        return calculateGameDayForUser(session.getUserId());
+        return calculateGameDayForUser(session.getUser().getId());
     }
 
     /**

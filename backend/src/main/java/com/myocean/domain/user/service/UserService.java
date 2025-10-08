@@ -136,10 +136,8 @@ public class UserService {
 
         // 연관 데이터 삭제
         friendInvitationRepository.deleteByInviterUserIdOrInviteeUserId(userId, userId);
-        gameSessionRepository.deleteByUserId(userId);
         diaryRepository.deleteByUserId(userId);
         reportRepository.deleteByUserId(userId);
-        surveyAnswerRepository.deleteByUserId(userId);
         big5ResultRepository.deleteByUserId(userId);
         friendRepository.deleteByUserIdOrFriendId(userId);
         myChatRepository.deleteByUserId(userId);

@@ -14,6 +14,7 @@ public enum ErrorStatus {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400", "잘못된 요청입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "로그인 인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
+    INVALID_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "COMMON402", "필수 요청 파라미터가 누락되었거나 잘못되었습니다."),
 
     /*
     User
