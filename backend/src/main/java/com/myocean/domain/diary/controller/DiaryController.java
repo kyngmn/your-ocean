@@ -26,7 +26,7 @@ public class DiaryController {
 
     private final DiaryService diaryService;
 
-    @Operation(summary = "Create diary", description = "Create new diary")
+    @Operation(summary = "일기 생성", description = "일기 생성")
     @PostMapping
     public ApiResponse<DiaryResponse> createDiary(
             @Valid @RequestBody DiaryCreateRequest request,
@@ -37,7 +37,19 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-    @Operation(summary = "Get diary by ID", description = "Get diary by specific diary ID")
+    @Operation(summary = "일기 날짜로 조회", description = "특정 날짜의 일기를 조회합니다.")
+    @GetMapping
+    public ApiResponse<DiaryResponse> getDiaryByDate(
+            @Parameter(description = "Diary date (YYYY-MM-DD format)", example = "2024-02-15", required = true)
+            @RequestParam String date,
+            @LoginMember CustomUserDetails userDetails
+    ) {
+        Integer userId = extractUserId(userDetails);
+        DiaryResponse response = diaryService.getDiaryByDate(userId, date);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @Operation(summary = "일기 ID로 조회", description = "일기 ID로 조회")
     @GetMapping("/{diaryId}")
     public ApiResponse<DiaryResponse> getDiaryById(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
@@ -48,18 +60,7 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-    @Operation(summary = "Get diary by date", description = "Get diary by specific date")
-    @GetMapping("/date/{diaryDate}")
-    public ApiResponse<DiaryResponse> getDiaryByDate(
-            @Parameter(description = "Diary date (YYYY-MM-DD format)", example = "2024-02-15") @PathVariable String diaryDate,
-            @LoginMember CustomUserDetails userDetails) {
-
-        Integer userId = extractUserId(userDetails);
-        DiaryResponse response = diaryService.getDiaryByDate(userId, diaryDate);
-        return ApiResponse.onSuccess(response);
-    }
-
-    @Operation(summary = "Delete diary by ID", description = "Delete diary by specific diary ID")
+    @Operation(summary = "일기 id로 삭제", description = "일기 id로 삭제")
     @DeleteMapping("/{diaryId}")
     public ApiResponse<Void> deleteDiary(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
@@ -81,14 +82,12 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-
-    @Operation(summary = "다이어리 분석 결과 가져오기", description = "Get AI analysis result for specific diary")
+    @Operation(summary = "다이어리 분석 결과 가져오기", description = "다이어리 분석 결과 조회")
     @GetMapping("/{diaryId}/analysis")
     public ApiResponse<DiaryAnalysisResponse> getDiaryAnalysis(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
             @LoginMember CustomUserDetails userDetails
     ){
-
         Integer userId = extractUserId(userDetails);
         DiaryAnalysisResponse response = diaryService.getDiaryAnalysis(userId, diaryId);
         return ApiResponse.onSuccess(response);

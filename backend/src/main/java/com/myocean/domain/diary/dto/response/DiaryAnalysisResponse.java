@@ -20,6 +20,9 @@ public class DiaryAnalysisResponse {
     @Schema(description = "다이어리 ID", example = "1")
     private Integer diaryId;
 
+    @Schema(description = "분석 상태", example = "COMPLETED", allowableValues = {"COMPLETED", "PROCESSING"})
+    private String status;
+
     @Schema(description = "OCEAN 페르소나 대화 메시지들")
     private List<OceanMessage> oceanMessages;
 
