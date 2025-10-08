@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, Integer> {
 
-    @Query("SELECT a FROM Actor a WHERE a.kind = :kind AND a.userId = :userId")
-    Optional<Actor> findByKindAndUserId(@Param("kind") ActorKind kind, @Param("userId") Integer userId);
+    @Query("SELECT a FROM Actor a WHERE a.kind = :kind AND a.user.id = :userId")
+    Optional<Actor> findByKindAndUser_Id(@Param("kind") ActorKind kind, @Param("userId") Integer userId);
 
 }
