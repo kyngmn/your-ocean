@@ -132,20 +132,24 @@ public class MyChatService {
 
 
     private Actor findOrCreatePersonaActor(Integer userId) {
-        // TODO: Big5 점수에 따른 적절한 페르소나 선택 로직
-        return actorRepository.findByKindAndUserId(ActorKind.PERSONA, userId)
-                .orElseGet(() -> {
-                    Actor personaActor = Actor.builder()
-                            .kind(ActorKind.PERSONA)
-                            .userId(userId)
-                            .build();
-                    return actorRepository.save(personaActor);
-                });
+        // 1. UserPersona가 있으면 해당 유저의 PERSONA Actor 사용
+        // TODO: UserPersona 기반 Actor 찾기
+        // Optional<Actor> userPersonaActor = actorRepository.findByPersona_User_Id(userId);
+        // if (userPersonaActor.isPresent()) {
+        //     return userPersonaActor.get();
+        // }
+
+        // 2. 없으면 기본 PERSONA Actor 사용 (ID 1 - Openness)
+        return actorRepository.findById(com.myocean.domain.user.constants.ActorConstants.OPENNESS_ACTOR_ID)
+                .orElseThrow(() -> new RuntimeException("Default Persona Actor not found"));
     }
 
     private Actor findOrCreatePersonaActorByBigCode(Integer userId, BigCode bigCode) {
-        // 간단히 BigCode별로 구분되는 PERSONA Actor 생성/조회
-        // 실제로는 더 복잡한 로직이 필요할 수 있지만, 일단 기본 PERSONA Actor 사용
+        // 1. UserPersona가 있으면 해당 BigCode의 UserPersona Actor 사용
+        // TODO: 구현
+
+        // 2. 없으면 BigCode에 해당하는 기본 Actor 사용 (ID 1-5)
+        Integer actorId = com.myocean.domain.user.constants.ActorConstants.getDefaultActorId(bigCode);
         return findOrCreatePersonaActor(userId);
     }
 

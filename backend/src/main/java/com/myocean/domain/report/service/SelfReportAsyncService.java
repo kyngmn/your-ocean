@@ -21,7 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SelfReportAsyncService {
 
-    private final SurveyResultCalculator surveyResultCalculator;
     private final SurveyAnswerRepository surveyAnswerRepository;
     private final ReportService reportService;
 
@@ -45,7 +44,7 @@ public class SelfReportAsyncService {
             log.info("설문 응답 조회 완료 - userId: {}, 응답 수: {}", userId, responses.size());
 
             // 2) 빅파이브 점수 계산
-            Map<String, Integer> bigFiveScores = surveyResultCalculator.calculateBigFiveScores(responses);
+            Map<String, Integer> bigFiveScores = SurveyResultCalculator.calculateBigFiveScores(responses);
 
             // 3) 리포트 생성 및 저장
             reportService.saveSelfReport(userId, bigFiveScores);

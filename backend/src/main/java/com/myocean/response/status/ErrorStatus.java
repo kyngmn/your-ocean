@@ -82,6 +82,11 @@ public enum ErrorStatus {
      */
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "DIARY4040", "요청한 다이어리를 찾을 수 없습니다."),
     INVALID_YEAR_MONTH_FORMAT(HttpStatus.BAD_REQUEST, "DIARY4001", "올바르지 않은 년월 형식입니다."),
+    DIARY_ALREADY_EXISTS_FOR_DATE(HttpStatus.BAD_REQUEST, "DIARY4002", "해당 날짜에 이미 다이어리가 존재합니다. 하루에 하나의 다이어리만 작성할 수 있습니다."),
+    DIARY_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DIARY5000", "다이어리 분석 중 오류가 발생했습니다."),
+    DIARY_ANALYSIS_RESULT_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DIARY5001", "다이어리 분석 결과 조회 중 오류가 발생했습니다."),
+    DIARY_ANALYSIS_RESPONSE_BUILD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DIARY5002", "분석 결과 변환 중 오류가 발생했습니다."),
+    DIARY_ANALYSIS_SUMMARY_NOT_FOUND(HttpStatus.NOT_FOUND, "DIARY4041", "다이어리 분석 요약을 찾을 수 없습니다."),
 
     /*
     Survey
