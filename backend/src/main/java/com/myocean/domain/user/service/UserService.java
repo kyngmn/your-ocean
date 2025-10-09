@@ -103,7 +103,7 @@ public class UserService {
 
             // 최소 형식: http://host/bucket/object (parts.length >= 5)
             if (parts.length < 5) {
-                throw new IllegalArgumentException("유효하지 않은 MinIO URL format");
+                throw new GeneralException(ErrorStatus.INVALID_MINIO_URL_FORMAT);
             }
 
             // parts[0] = "http:" or "https:"  // parts[1] = ""
