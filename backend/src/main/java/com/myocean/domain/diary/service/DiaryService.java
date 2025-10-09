@@ -140,7 +140,8 @@ public class DiaryService {
 
         // 분석 결과가 있으면 메시지와 요약 정보를 포함해서 반환
         if (!analysisMessages.isEmpty()) {
-            return buildDiaryAnalysisResponse(diaryId, analysisMessages, analysisStatus);
+            DiaryAnalysisResponse.AnalysisSummary summary = diaryAnalysisService.getAnalysisSummary(diaryId);
+            return DiaryAnalysisConverter.toAnalysisResponse(diaryId, analysisMessages, summary, analysisStatus);
         }
 
         // 분석 결과가 없으면 상태만 반환
@@ -148,24 +149,6 @@ public class DiaryService {
         return DiaryAnalysisResponse.builder()
                 .diaryId(diaryId)
                 .status(analysisStatus)
-                .build();
-    }
-
-    /**
-     * DiaryAnalysisMessage 리스트를 DiaryAnalysisResponse로 변환
-     */
-    private DiaryAnalysisResponse buildDiaryAnalysisResponse(Integer diaryId, List<DiaryAnalysisMessage> analysisMessages, String status) {
-        List<DiaryAnalysisResponse.OceanMessage> oceanMessages = analysisMessages.stream()
-                .map(DiaryAnalysisConverter::toOceanMessage)
-                .toList();
-
-        DiaryAnalysisResponse.AnalysisSummary summary = diaryAnalysisService.getAnalysisSummary(diaryId);
-
-        return DiaryAnalysisResponse.builder()
-                .diaryId(diaryId)
-                .status(status)
-                .oceanMessages(oceanMessages)
-                .summary(summary)
                 .build();
     }
 

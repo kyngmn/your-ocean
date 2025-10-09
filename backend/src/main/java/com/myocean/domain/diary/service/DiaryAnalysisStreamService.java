@@ -3,7 +3,7 @@ package com.myocean.domain.diary.service;
 import com.myocean.domain.diary.converter.DiaryAnalysisConverter;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
-import com.myocean.domain.diary.enums.AnalysisStatus;
+import com.myocean.global.enums.AnalysisStatus;
 import com.myocean.response.ApiResponse;
 import com.myocean.response.status.SuccessStatus;
 import jakarta.annotation.PreDestroy;
@@ -35,7 +35,7 @@ public class DiaryAnalysisStreamService {
     /**
      * SSE를 통해 분석 결과를 순차적으로 스트리밍
      */
-    public SseEmitter streamAnalysisResult(Integer diaryId) {
+    public SseEmitter streamMessage(Integer diaryId) {
         SseEmitter emitter = new SseEmitter(TIMEOUT);
 
         executor.execute(() -> {

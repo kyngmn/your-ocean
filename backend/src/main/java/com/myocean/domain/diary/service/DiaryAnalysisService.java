@@ -1,7 +1,7 @@
 package com.myocean.domain.diary.service;
 
 import com.myocean.domain.big5.service.Big5DiaryCalculationService;
-import com.myocean.domain.diary.enums.AnalysisStatus;
+import com.myocean.global.enums.AnalysisStatus;
 import com.myocean.domain.diary.util.DiaryAnalysisParser;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;

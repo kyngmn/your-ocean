@@ -1,6 +1,6 @@
 package com.myocean.domain.diary.service;
 
-import com.myocean.domain.diary.enums.AnalysisStatus;
+import com.myocean.global.enums.AnalysisStatus;
 import com.myocean.domain.diary.util.DiaryAnalysisParser;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.entity.DiaryAnalysisSummary;

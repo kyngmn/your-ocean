@@ -1,6 +1,6 @@
 package com.myocean.domain.diary.service;
 
-import com.myocean.domain.diary.constants.OceanConstants;
+import com.myocean.global.enums.BigCode;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
 import com.myocean.domain.diary.repository.DiaryAnalysisMessageRepository;
 import com.myocean.domain.diary.repository.DiaryRepository;
@@ -34,9 +34,9 @@ public class DiaryAnalysisMessageService {
         log.info("OCEAN 분석 메시지 저장 - userId: {}, diaryId: {}", userId, diaryId);
 
         int messageOrder = 1;
-        for (Map.Entry<String, Long> entry : OceanConstants.OCEAN_TYPE_TO_ACTOR_ID.entrySet()) {
-            String oceanType = entry.getKey();
-            Long actorId = entry.getValue();
+        for (BigCode bigCode : BigCode.values()) {
+            String oceanType = bigCode.getEnglishName();
+            Long actorId = bigCode.getActorId();
 
             String message = (String) agentResponses.get(oceanType);
             if (message != null) {

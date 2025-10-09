@@ -1,6 +1,6 @@
 package com.myocean.domain.diary.util;
 
-import com.myocean.domain.diary.constants.OceanConstants;
+import com.myocean.global.enums.BigCode;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,8 +52,7 @@ public class DiaryAnalysisParser {
 
             for (Map.Entry<String, Object> entry : big5Data.entrySet()) {
                 String originalKey = entry.getKey();
-                String mappedKey = OceanConstants.BIG5_KEY_NORMALIZER.getOrDefault(originalKey,
-                        OceanConstants.BIG5_KEY_NORMALIZER.getOrDefault(originalKey.toLowerCase(), originalKey));
+                String mappedKey = normalizeKey(originalKey);
 
                 if (entry.getValue() instanceof Number) {
                     big5Scores.put(mappedKey, ((Number) entry.getValue()).doubleValue());
@@ -65,6 +64,26 @@ public class DiaryAnalysisParser {
         }
 
         return big5Scores;
+    }
+
+    /**
+     * Big5 키 정규화 (한글명/영문명 → DB 키)
+     */
+    private static String normalizeKey(String key) {
+        if (key == null) return key;
+
+        // BigCode enum으로 매핑 시도
+        BigCode bigCode = BigCode.fromKoreanName(key);
+        if (bigCode == null) {
+            bigCode = BigCode.fromEnglishName(key);
+        }
+
+        if (bigCode != null) {
+            return bigCode.getEnglishName().toLowerCase();
+        }
+
+        // 매핑 실패 시 소문자로 변환
+        return key.toLowerCase();
     }
 
     /**

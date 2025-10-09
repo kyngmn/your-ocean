@@ -113,7 +113,7 @@ public class DiaryController {
     ){
         Integer userId = extractUserId(userDetails);
         diaryService.getDiaryById(userId, diaryId);
-        return streamService.streamAnalysisResult(diaryId);
+        return streamService.streamMessage(diaryId);
     }
 
     private Integer extractUserId(CustomUserDetails userDetails) {
