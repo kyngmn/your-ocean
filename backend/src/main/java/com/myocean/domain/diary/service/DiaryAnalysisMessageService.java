@@ -64,14 +64,7 @@ public class DiaryAnalysisMessageService {
     }
 
     /**
-     * 저장된 OCEAN 분석 메시지들 조회 (userId 체크 포함)
-     */
-    public List<DiaryAnalysisMessage> getStoredAnalysisMessages(Integer userId, Integer diaryId) {
-        return diaryAnalysisMessageRepository.findByDiaryIdOrderByCreatedAtAsc(diaryId);
-    }
-
-    /**
-     * 저장된 OCEAN 분석 메시지들 조회 (diaryId만)
+     * 저장된 OCEAN 분석 메시지들 조회
      */
     public List<DiaryAnalysisMessage> getStoredAnalysisMessages(Integer diaryId) {
         return diaryAnalysisMessageRepository.findByDiaryIdOrderByCreatedAtAsc(diaryId);

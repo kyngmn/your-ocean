@@ -3,6 +3,7 @@ package com.myocean.domain.diary.service;
 import com.myocean.domain.diary.converter.DiaryAnalysisConverter;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -88,5 +90,28 @@ public class DiaryAnalysisStreamService {
         emitter.onError(e -> log.error("[SSE] Emitter 에러 - diaryId: {}", diaryId, e));
 
         return emitter;
+    }
+
+    /**
+     * 애플리케이션 종료 시 ExecutorService 정리
+     */
+    @PreDestroy
+    public void shutdown() {
+        log.info("[SSE] ExecutorService 종료 시작");
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                log.warn("[SSE] ExecutorService가 10초 내에 종료되지 않아 강제 종료");
+                executor.shutdownNow();
+                if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    log.error("[SSE] ExecutorService 강제 종료 실패");
+                }
+            }
+            log.info("[SSE] ExecutorService 정상 종료");
+        } catch (InterruptedException e) {
+            log.error("[SSE] ExecutorService 종료 중 인터럽트 발생");
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

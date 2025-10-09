@@ -103,6 +103,15 @@ public class DiaryAnalysisSummaryService {
     }
 
     /**
+     * 분석 상태 조회
+     */
+    public AnalysisStatus getAnalysisStatus(Integer diaryId) {
+        return diaryAnalysisSummaryRepository.findByDiaryId(diaryId)
+                .map(DiaryAnalysisSummary::getStatus)
+                .orElse(AnalysisStatus.PROCESSING); // Summary가 없으면 PROCESSING으로 간주
+    }
+
+    /**
      * 분석 상태 업데이트
      */
     @Transactional
