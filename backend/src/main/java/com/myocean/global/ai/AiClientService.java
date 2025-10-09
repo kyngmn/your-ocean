@@ -23,6 +23,7 @@ public class AiClientService {
     @Value("${ai.server.url:http://localhost:8000}")
     private String aiServerUrl;
 
+    //friend-chat 에서 이용중임
     public Map<String, Object> chatWithAi(Integer userId, String message, String chatType, Integer relatedId) {
         try {
             log.info("AI 서버로 채팅 요청 - userId: {}, chatType: {}, message: {}", 
