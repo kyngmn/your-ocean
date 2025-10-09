@@ -76,7 +76,6 @@ public class MyChatAnalysisService {
                 log.warn("Big5 점수가 없어서 Big5Result 저장 스킵 - messageId: {}", messageId);
                 return;
             }
-
             big5CalculationService.saveBig5Result(userId, Big5SourceType.MY_CHAT, messageId, big5Scores);
         } catch (Exception e) {
             log.error("Big5Result 저장 실패 - userId: {}, messageId: {}, error: {}",
