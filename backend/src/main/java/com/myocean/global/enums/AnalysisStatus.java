@@ -1,4 +1,4 @@
-package com.myocean.domain.diary.enums;
+package com.myocean.global.enums;
 
 public enum AnalysisStatus {
     PROCESSING,  // 분석 중
