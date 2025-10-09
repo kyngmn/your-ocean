@@ -3,6 +3,9 @@ package com.myocean.domain.diary.service;
 import com.myocean.domain.diary.converter.DiaryAnalysisConverter;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
+import com.myocean.domain.diary.enums.AnalysisStatus;
+import com.myocean.response.ApiResponse;
+import com.myocean.response.status.SuccessStatus;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +42,55 @@ public class DiaryAnalysisStreamService {
             try {
                 log.info("[SSE] 스트리밍 시작 - diaryId: {}", diaryId);
 
-                // 1. OCEAN 메시지 5개 순차 전송
+                // 0. 분석 상태 확인
+                AnalysisStatus analysisStatus = summaryService.getAnalysisStatus(diaryId);
+
+                // PROCESSING 상태면 처리 중 메시지 전송
+                if (analysisStatus == AnalysisStatus.PROCESSING) {
+                    ApiResponse<String> processingResponse = ApiResponse.onSuccess(
+                            SuccessStatus.DIARY_ANALYSIS_PROCESSING,
+                            "분석이 아직 진행 중입니다. 잠시 후 다시 시도해주세요."
+                    );
+
+                    emitter.send(SseEmitter.event()
+                            .name("status")
+                            .data(processingResponse));
+
+                    emitter.complete();
+                    log.info("[SSE] PROCESSING 상태 - diaryId: {}", diaryId);
+                    return;
+                }
+
+                // FAILED 상태면 실패 메시지 전송
+                if (analysisStatus == AnalysisStatus.FAILED) {
+                    ApiResponse<String> failedResponse = ApiResponse.onSuccess(
+                            SuccessStatus.DIARY_ANALYSIS_FAILED,
+                            "분석이 실패했습니다."
+                    );
+
+                    emitter.send(SseEmitter.event()
+                            .name("status")
+                            .data(failedResponse));
+
+                    emitter.complete();
+                    log.info("[SSE] FAILED 상태 - diaryId: {}", diaryId);
+                    return;
+                }
+
+                // 1. OCEAN 메시지 5개 순차 전송 (ApiResponse로 감싸기)
                 List<DiaryAnalysisMessage> messages = messageService.getStoredAnalysisMessages(diaryId);
 
                 for (DiaryAnalysisMessage message : messages) {
                     DiaryAnalysisResponse.OceanMessage oceanMessage = DiaryAnalysisConverter.toOceanMessage(message);
 
+                    ApiResponse<DiaryAnalysisResponse.OceanMessage> response = ApiResponse.onSuccess(
+                            SuccessStatus.DIARY_ANALYSIS_COMPLETED,
+                            oceanMessage
+                    );
+
                     emitter.send(SseEmitter.event()
                             .name("ocean-message")
-                            .data(oceanMessage));
+                            .data(response));
 
                     log.info("[SSE] OCEAN 메시지 전송 - diaryId: {}, personality: {}",
                             diaryId, oceanMessage.getPersonality());
@@ -55,19 +98,29 @@ public class DiaryAnalysisStreamService {
                     Thread.sleep(DELAY_BETWEEN_MESSAGES);
                 }
 
-                // 2. Summary 전송
+                // 2. Summary 전송 (ApiResponse로 감싸기)
                 DiaryAnalysisResponse.AnalysisSummary summary = summaryService.getAnalysisSummary(diaryId);
+
+                ApiResponse<DiaryAnalysisResponse.AnalysisSummary> summaryResponse = ApiResponse.onSuccess(
+                        SuccessStatus.DIARY_ANALYSIS_COMPLETED,
+                        summary
+                );
 
                 emitter.send(SseEmitter.event()
                         .name("summary")
-                        .data(summary));
+                        .data(summaryResponse));
 
                 log.info("[SSE] Summary 전송 - diaryId: {}", diaryId);
 
                 // 3. 완료 이벤트 전송
+                ApiResponse<String> completeResponse = ApiResponse.onSuccess(
+                        SuccessStatus.DIARY_ANALYSIS_COMPLETED,
+                        "분석 스트리밍 완료"
+                );
+
                 emitter.send(SseEmitter.event()
                         .name("complete")
-                        .data("분석 스트리밍 끝!"));
+                        .data(completeResponse));
 
                 emitter.complete();
                 log.info("[SSE] 스트리밍 완료 - diaryId: {}", diaryId);

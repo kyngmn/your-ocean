@@ -9,6 +9,7 @@ import com.myocean.domain.diary.service.DiaryAnalysisStreamService;
 import com.myocean.global.security.userdetails.CustomUserDetails;
 import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
+import com.myocean.response.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -93,7 +94,15 @@ public class DiaryController {
     ){
         Integer userId = extractUserId(userDetails);
         DiaryAnalysisResponse response = diaryService.getDiaryAnalysis(userId, diaryId);
-        return ApiResponse.onSuccess(response);
+
+        // 상태에 따라 다른 SuccessStatus 반환
+        SuccessStatus status = switch (response.getStatus()) {
+            case "PROCESSING" -> SuccessStatus.DIARY_ANALYSIS_PROCESSING;
+            case "FAILED" -> SuccessStatus.DIARY_ANALYSIS_FAILED;
+            default -> SuccessStatus.DIARY_ANALYSIS_COMPLETED;
+        };
+
+        return ApiResponse.onSuccess(status, response);
     }
 
     @Operation(summary = "다이어리 분석 결과 스트리밍", description = "SSE를 통해 OCEAN 메시지를 하나씩 스트리밍합니다")

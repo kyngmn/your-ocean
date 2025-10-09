@@ -19,7 +19,7 @@ public class DiaryAnalysisConverter {
             throw new GeneralException(ErrorStatus.DIARY_ANALYSIS_MESSAGE_INVALID);
         }
 
-        Integer actorId = message.getSenderActor().getId();
+        Long actorId = message.getSenderActor().getId();
         OceanConstants.OceanInfo oceanInfo = OceanConstants.ACTOR_ID_TO_OCEAN_INFO.get(actorId);
 
         if (oceanInfo == null) {

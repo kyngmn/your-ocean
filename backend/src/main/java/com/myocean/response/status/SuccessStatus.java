@@ -37,7 +37,14 @@ public enum SuccessStatus {
      Persona
      */
     PERSONA_EXISTS(HttpStatus.OK, "PERSONA200", "페르소나가 존재합니다."),
-    PERSONA_NOT_EXISTS(HttpStatus.OK, "PERSONA404", "페르소나가 생성되지 않았습니다.");
+    PERSONA_NOT_EXISTS(HttpStatus.OK, "PERSONA404", "페르소나가 생성되지 않았습니다."),
+
+    /*
+     Diary Analysis
+     */
+    DIARY_ANALYSIS_PROCESSING(HttpStatus.OK, "DIARY2000", "분석이 진행 중입니다."),
+    DIARY_ANALYSIS_COMPLETED(HttpStatus.OK, "DIARY2001", "분석이 완료되었습니다."),
+    DIARY_ANALYSIS_FAILED(HttpStatus.OK, "DIARY2002", "분석이 실패했습니다.");
 
 
     private final HttpStatus httpStatus;
