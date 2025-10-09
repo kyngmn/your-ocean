@@ -305,8 +305,7 @@ INSERT INTO actors (id, kind, user_id, persona_id) VALUES
                                                        (2, 'SYSTEM', NULL, NULL),  -- Conscientiousness (성실성)
                                                        (3, 'SYSTEM', NULL, NULL),  -- Extraversion (외향성)
                                                        (4, 'SYSTEM', NULL, NULL),  -- Agreeableness (친화성)
-                                                       (5, 'SYSTEM', NULL, NULL)  -- Neuroticism (신경성)
-ON CONFLICT (id) DO NOTHING
+                                                       (5, 'SYSTEM', NULL, NULL);  -- Neuroticism (신경성)
 
 -- actors sequence를 6부터 시작하도록 재설정
 SELECT setval('actors_id_seq', 5, true);
@@ -315,4 +314,8 @@ COMMIT;
 
 select * from actors;
 
+select * from users;
+
 select * from big5_results;
+
+select * from my_chat_messages order by id asc;
