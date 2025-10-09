@@ -1,5 +1,6 @@
 package com.myocean.domain.diary.service;
 
+import com.myocean.domain.big5.service.Big5DiaryCalculationService;
 import com.myocean.domain.diary.enums.AnalysisStatus;
 import com.myocean.domain.diary.util.DiaryAnalysisParser;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
@@ -24,6 +25,7 @@ public class DiaryAnalysisService {
 
     private final DiaryAnalysisMessageService messageService;
     private final DiaryAnalysisSummaryService summaryService;
+    private final Big5DiaryCalculationService big5DiaryCalculationService;
 
     /**
      * AI 서버에서 받은 분석 결과를 파싱하고 DB에 저장
@@ -50,14 +52,37 @@ public class DiaryAnalysisService {
         messageService.saveOceanAnalysisMessages(userId, diaryId, agentResponses);
         summaryService.saveDiaryAnalysisSummary(diaryId, actualData);
 
+        // Big5Result에도 저장
+        saveBig5Result(userId, diaryId, actualData);
+
         log.info("AI 분석 결과 파싱 및 저장 완료 - userId: {}, diaryId: {}", userId, diaryId);
+    }
+
+    /**
+     * Big5 점수를 Big5Result 테이블에 저장
+     */
+    private void saveBig5Result(Integer userId, Integer diaryId, Map<String, Object> actualData) {
+        try {
+            Map<String, Double> big5Scores = DiaryAnalysisParser.parseBig5Scores(actualData);
+
+            if (big5Scores == null || big5Scores.isEmpty()) {
+                log.warn("Big5 점수가 없어서 Big5Result 저장 스킵 - diaryId: {}", diaryId);
+                return;
+            }
+
+            big5DiaryCalculationService.saveDiaryBig5Result(userId, diaryId, big5Scores);
+        } catch (Exception e) {
+            log.error("Big5Result 저장 실패 - userId: {}, diaryId: {}, error: {}",
+                    userId, diaryId, e.getMessage(), e);
+            // Big5Result 저장 실패해도 전체 프로세스는 계속 진행
+        }
     }
 
     /**
      * 저장된 OCEAN 분석 메시지들 조회
      */
-    public List<DiaryAnalysisMessage> getStoredAnalysisMessages(Integer userId, Integer diaryId) {
-        return messageService.getStoredAnalysisMessages(userId, diaryId);
+    public List<DiaryAnalysisMessage> getStoredAnalysisMessages(Integer diaryId) {
+        return messageService.getStoredAnalysisMessages(diaryId);
     }
 
     /**
