@@ -46,10 +46,17 @@ public class ChatAnalysisRefinementService {
             String responseContent = response.getContent();
 
             if (responseContent != null && !responseContent.trim().isEmpty()) {
+                log.info("==================== OpenAI 원본 응답 ====================");
+                log.info("OpenAI 응답: {}", responseContent);
+                log.info("========================================================");
+
                 // JSON 응답 파싱
                 Map<String, Object> refinedData = parseJsonResponse(responseContent);
 
                 if (refinedData != null) {
+                    log.info("==================== OpenAI 파싱 결과 ====================");
+                    log.info("파싱된 데이터: {}", refinedData);
+                    log.info("========================================================");
                     log.info("OpenAI 채팅 분석 결과 다듬기 완료");
 
                     // 성공 응답 형태로 반환

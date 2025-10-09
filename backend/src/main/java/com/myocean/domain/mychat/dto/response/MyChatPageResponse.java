@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Schema(description = "채팅 히스토리 응답")
-public class MyChatHistoryResponse {
+public class MyChatPageResponse {
 
     @Schema(description = "채팅 메시지 목록")
     private List<MyChatResponse> messages;
@@ -37,15 +36,5 @@ public class MyChatHistoryResponse {
     @Schema(description = "마지막 페이지 여부", example = "false")
     private boolean last;
 
-    public static MyChatHistoryResponse from(Page<MyChatResponse> page) {
-        return MyChatHistoryResponse.builder()
-                .messages(page.getContent())
-                .page(page.getNumber())
-                .size(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .first(page.isFirst())
-                .last(page.isLast())
-                .build();
-    }
+
 }

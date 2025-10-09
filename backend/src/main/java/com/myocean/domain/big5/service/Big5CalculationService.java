@@ -10,17 +10,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-//다이어리 분석 결과를 Big5Result에 저장
+/**
+ * Big5 분석 결과를 Big5Result 테이블에 저장하는 통합 서비스
+ * Diary, MyChat, GameSession 등 모든 소스 타입에서 사용
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class Big5DiaryCalculationService {
+public class Big5CalculationService {
 
     private final Big5ResultRepository big5ResultRepository;
 
+    /**
+     * Big5 점수를 Big5Result 테이블에 저장
+     *
+     * @param userId 사용자 ID
+     * @param sourceType 소스 타입 (DIARY, MY_CHAT, GAME_SESSION)
+     * @param sourceId 소스 ID (diaryId, messageId, sessionId 등)
+     * @param big5Scores Big5 점수 맵 (openness, conscientiousness, extraversion, agreeableness, neuroticism)
+     */
     @Transactional
-    public void saveDiaryBig5Result(Integer userId, Integer diaryId, Map<String, Double> big5Scores) {
-        log.info("다이어리 Big5 결과 저장 시작 - userId: {}, diaryId: {}", userId, diaryId);
+    public void saveBig5Result(Integer userId, Big5SourceType sourceType, Long sourceId, Map<String, Double> big5Scores) {
+        log.info("Big5 결과 저장 시작 - userId: {}, sourceType: {}, sourceId: {}", userId, sourceType, sourceId);
 
         // Double (0.0~1.0) → Integer (0~100) 변환
         Integer resultO = convertToInteger(big5Scores.get("openness"));
@@ -31,8 +42,8 @@ public class Big5DiaryCalculationService {
 
         Big5Result big5Result = Big5Result.builder()
                 .userId(userId)
-                .sourceType(Big5SourceType.DIARY)
-                .sourceId(diaryId.longValue())
+                .sourceType(sourceType)
+                .sourceId(sourceId)
                 .resultO(resultO)
                 .resultC(resultC)
                 .resultE(resultE)
@@ -42,10 +53,9 @@ public class Big5DiaryCalculationService {
 
         big5ResultRepository.save(big5Result);
 
-        log.info("다이어리 Big5 결과 저장 완료 - userId: {}, diaryId: {}, O:{}, C:{}, E:{}, A:{}, N:{}",
-                userId, diaryId, resultO, resultC, resultE, resultA, resultN);
+        log.info("Big5 결과 저장 완료 - userId: {}, sourceType: {}, sourceId: {}, O:{}, C:{}, E:{}, A:{}, N:{}",
+                userId, sourceType, sourceId, resultO, resultC, resultE, resultA, resultN);
     }
-
 
     private Integer convertToInteger(Double value) {
         if (value == null) {

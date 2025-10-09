@@ -1,6 +1,6 @@
 package com.myocean.domain.diary.entity;
 
-import com.myocean.domain.diary.enums.AnalysisStatus;
+import com.myocean.global.enums.AnalysisStatus;
 import com.myocean.global.common.BaseRDBEntity;
 import jakarta.persistence.*;
 import lombok.*;
