@@ -124,26 +124,16 @@ public class FriendChatService {
     }
 
     private Actor findOrCreateUserActor(Integer userId) {
-        return actorRepository.findByKindAndUserId(ActorKind.USER, userId)
-                .orElseGet(() -> {
-                    Actor userActor = Actor.builder()
-                            .kind(ActorKind.USER)
-                            .userId(userId)
-                            .build();
-                    return actorRepository.save(userActor);
-                });
+        // Actor는 User 생성 시 자동 생성됨
+        return actorRepository.findByKindAndUser_Id(ActorKind.USER, userId)
+                .orElseThrow(() -> new RuntimeException("User Actor not found"));
     }
 
     private Actor findOrCreatePersonaActor(Integer userId) {
         // TODO: 친구 페르소나에 따른 적절한 페르소나 선택 로직
-        return actorRepository.findByKindAndUserId(ActorKind.PERSONA, userId)
-                .orElseGet(() -> {
-                    Actor personaActor = Actor.builder()
-                            .kind(ActorKind.PERSONA)
-                            .userId(userId)
-                            .build();
-                    return actorRepository.save(personaActor);
-                });
+        // Actor는 UserPersona 생성 시 자동 생성됨
+        return actorRepository.findByKindAndUser_Id(ActorKind.USER, userId)
+                .orElseThrow(() -> new RuntimeException("User Actor not found"));
     }
 
     private Actor findOrCreatePersonaActorByBigCode(Integer userId, com.myocean.global.enums.BigCode bigCode) {

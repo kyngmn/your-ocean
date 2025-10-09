@@ -20,7 +20,6 @@ public class UserPersonaService {
 
     private final UserPersonaRepository userPersonaRepository;
     private final UserRepository userRepository;
-    private final UserPersonaConverter userPersonaConverter;
 
     @Transactional(readOnly = true)
     public UserPersonaResponse getUserPersonas(Integer userId) {
@@ -32,7 +31,7 @@ public class UserPersonaService {
         }
 
         log.info("페르소나 조회 완료 - userId: {}", userId);
-        return userPersonaConverter.toResponse(personas);
+        return UserPersonaConverter.toResponse(personas);
     }
 
 }

@@ -14,6 +14,7 @@ public enum ErrorStatus {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400", "잘못된 요청입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "로그인 인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
+    INVALID_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "COMMON402", "필수 요청 파라미터가 누락되었거나 잘못되었습니다."),
 
     /*
     User
@@ -80,7 +81,14 @@ public enum ErrorStatus {
     Diary
      */
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "DIARY4040", "요청한 다이어리를 찾을 수 없습니다."),
-    INVALID_YEAR_MONTH_FORMAT(HttpStatus.BAD_REQUEST, "DIARY4001", "올바르지 않은 년월 형식입니다."),
+    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "DIARY4001", "올바르지 않은 날짜 형식입니다. YYYY-MM-DD 형식이어야 합니다."),
+    INVALID_YEAR_MONTH_FORMAT(HttpStatus.BAD_REQUEST, "DIARY4002", "올바르지 않은 년월 형식입니다. YYYY-MM 형식이어야 합니다."),
+    DIARY_ALREADY_EXISTS_FOR_DATE(HttpStatus.BAD_REQUEST, "DIARY4003", "해당 날짜에 이미 다이어리가 존재합니다. 하루에 하나의 다이어리만 작성할 수 있습니다."),
+    DIARY_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DIARY5000", "다이어리 분석 중 오류가 발생했습니다."),
+    DIARY_ANALYSIS_RESULT_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DIARY5001", "다이어리 분석 결과 조회 중 오류가 발생했습니다."),
+    DIARY_ANALYSIS_RESPONSE_BUILD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DIARY5002", "분석 결과 변환 중 오류가 발생했습니다."),
+    DIARY_ANALYSIS_SUMMARY_NOT_FOUND(HttpStatus.NOT_FOUND, "DIARY4041", "다이어리 분석 요약을 찾을 수 없습니다."),
+    DIARY_ANALYSIS_MESSAGE_INVALID(HttpStatus.BAD_REQUEST, "DIARY4004", "다이어리 분석 메시지 또는 발신자 정보가 유효하지 않습니다."),
 
     /*
     Survey
@@ -123,6 +131,7 @@ public enum ErrorStatus {
     File Upload
      */
     INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "FILE4001", "지원되지 않는 파일 형식입니다."),
+    INVALID_MINIO_URL_FORMAT(HttpStatus.BAD_REQUEST, "FILE4002", "유효하지 않은 MinIO URL 형식입니다."),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE5001", "파일 업로드에 실패했습니다."),
 
     /*

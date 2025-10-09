@@ -9,18 +9,18 @@ class BERTEmotionDetector:
     # 사용 가능한 모델들 (Microsoft 모델을 기본으로)
     AVAILABLE_MODELS = {
         "Nasserelsaman/microsoft-finetuned-personality": {
-            "name": "Microsoft Finetuned Personality", 
+            "name": "Microsoft Finetuned Personality",
             "description": "Microsoft에서 파인튜닝한 고성능 성격 분석 모델 (추천)",
-            "labels": ["친화성", "성실성", "외향성", "신경성", "개방성"]
+            "labels": ["Agreeableness", "Conscientiousness", "Extraversion", "Neuroticism", "Openness"]
         },
         "Minej/bert-base-personality": {
             "name": "Minej BERT Personality",
             "description": "BERT 기반 성격 분석 모델",
-            "labels": ["친화성", "성실성", "외향성", "신경성", "개방성"]
+            "labels": ["Agreeableness", "Conscientiousness", "Extraversion", "Neuroticism", "Openness"]
         }
     }
     
-    def __init__(self, model_name: str = "Nasserelsaman/microsoft-finetuned-personality"):
+    def __init__(self, model_name: str = "Minej/bert-base-personality"):
         """
         BERT 감정 분석 모델 초기화
         
@@ -89,10 +89,10 @@ class BERTEmotionDetector:
         if num_classes == 5:
             # Microsoft 모델: LABEL_0=Agreeableness, LABEL_1=Conscientiousness, LABEL_2=Extraversion, LABEL_3=Neuroticism, LABEL_4=Openness
             if "microsoft" in self.model_name.lower():
-                labels = ['친화성', '성실성', '외향성', '신경성', '개방성']
+                labels = ['Agreeableness', 'Conscientiousness', 'Extraversion', 'Neuroticism', 'Openness']
             else:
                 # 다른 모델들의 기본 순서 (Minej 모델 등)
-                labels = ['친화성', '성실성', '외향성', '신경성', '개방성']
+                labels = ['Agreeableness', 'Conscientiousness', 'Extraversion', 'Neuroticism', 'Openness']
         elif len(probabilities) == len(self.emotion_labels):
             labels = self.emotion_labels
         else:

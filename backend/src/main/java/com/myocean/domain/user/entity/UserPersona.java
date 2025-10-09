@@ -1,5 +1,6 @@
 package com.myocean.domain.user.entity;
 
+import com.myocean.domain.user.listener.PersonaActorCreator;
 import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.global.enums.BigCode;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import lombok.*;
            name = "uq_user_persona",
            columnNames = {"user_id", "big_code"}
        ))
+@EntityListeners(PersonaActorCreator.class)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,11 +26,8 @@ public class UserPersona extends BaseRDBEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
-    private Integer userId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"))
     private User user;
 
     @Enumerated(EnumType.STRING)

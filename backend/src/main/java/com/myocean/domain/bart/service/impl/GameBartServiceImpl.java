@@ -46,7 +46,7 @@ public class GameBartServiceImpl implements GameBartService {
 
         // 1. 게임 세션 검증
         GameSession gameSession = gameSessionRepository
-                .findByIdAndUserId(sessionId, userId)
+                .findByIdAndUser_Id(sessionId, userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
 
         if (gameSession.getFinishedAt() != null) {
@@ -138,7 +138,7 @@ public class GameBartServiceImpl implements GameBartService {
         try {
             // 1. 게임 세션 검증
             GameSession gameSession = gameSessionRepository
-                    .findByIdAndUserId(sessionId, userId)
+                    .findByIdAndUser_Id(sessionId, userId)
                     .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
 
             if (gameSession.getFinishedAt() != null) {
@@ -290,7 +290,7 @@ public class GameBartServiceImpl implements GameBartService {
             // BART 결과 저장 후 Big5 지표 계산 및 저장
             GameSession gameSession = gameSessionRepository.findById(sessionId).orElse(null);
             if (gameSession != null) {
-                calculateAndSaveBig5FromBart(gameSession.getUserId(), sessionId, savedResult);
+                calculateAndSaveBig5FromBart(gameSession.getUser().getId(), sessionId, savedResult);
             }
                     
         } catch (Exception e) {

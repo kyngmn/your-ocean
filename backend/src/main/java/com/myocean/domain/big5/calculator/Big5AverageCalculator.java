@@ -2,19 +2,17 @@ package com.myocean.domain.big5.calculator;
 
 import com.myocean.domain.big5.dto.Big5AverageScores;
 import com.myocean.domain.big5.entity.Big5Result;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@UtilityClass
 @Slf4j
-@Component
 public class Big5AverageCalculator {
 
-
-    public Big5AverageScores calculateAverages(List<Big5Result> results) {
+    public static Big5AverageScores calculateAverages(List<Big5Result> results) {
         log.debug("Big5 평균 계산 시작 - 결과 수: {}", results.size());
 
         // 각 차원별로 null이 아닌 값들을 수집하여 평균 계산
@@ -58,7 +56,7 @@ public class Big5AverageCalculator {
         return new Big5AverageScores(avgO, avgC, avgE, avgA, avgN);
     }
 
-    private Integer calculateAverageForDimension(List<Integer> values) {
+    private static Integer calculateAverageForDimension(List<Integer> values) {
         if (values.isEmpty()) {
             return null;
         }

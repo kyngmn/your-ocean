@@ -3,23 +3,23 @@ package com.myocean.domain.user.converter;
 import com.myocean.domain.user.dto.response.UserPersonaResponse;
 import com.myocean.domain.user.entity.UserPersona;
 import com.myocean.global.enums.BigCode;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+@UtilityClass
 public class UserPersonaConverter {
 
-    public UserPersonaResponse toResponse(List<UserPersona> personas) {
+    public static UserPersonaResponse toResponse(List<UserPersona> personas) {
         if (personas.isEmpty()) {
             return null;
         }
 
         UserPersona firstPersona = personas.get(0);
-        Integer userId = firstPersona.getUserId();
+        Integer userId = firstPersona.getUser().getId();
         Integer id = firstPersona.getId();
 
         // BigCode별 점수 맵 생성

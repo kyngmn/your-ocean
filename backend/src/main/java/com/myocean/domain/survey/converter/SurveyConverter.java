@@ -3,10 +3,12 @@ package com.myocean.domain.survey.converter;
 import com.myocean.domain.survey.dto.response.SurveyListResponse;
 import com.myocean.domain.survey.dto.response.SurveyResponse;
 import com.myocean.domain.survey.entity.Survey;
+import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+@UtilityClass
 public class SurveyConverter {
 
     public static SurveyResponse toSurveyResponse(Survey survey) {

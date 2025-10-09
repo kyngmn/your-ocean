@@ -5,6 +5,8 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  session:
+    store-type: none
 
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:myocean}?serverTimezone=Asia/Seoul
@@ -21,7 +23,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update #create-drop
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -30,6 +32,7 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
 
   sql:
     init:

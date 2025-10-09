@@ -1,5 +1,6 @@
 package com.myocean.domain.user.entity;
 
+import com.myocean.domain.user.listener.UserActorCreator;
 import com.myocean.global.common.BaseRDBEntity;
 import com.myocean.domain.user.enums.AiStatus;
 import com.myocean.domain.user.enums.Provider;
@@ -16,6 +17,7 @@ import java.util.List;
                 @UniqueConstraint(name = "uk_provider_social_id", columnNames = {"provider", "social_id"})
         }
 )
+@EntityListeners(UserActorCreator.class)
 @Getter
 @Setter
 @NoArgsConstructor

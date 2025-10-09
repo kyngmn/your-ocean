@@ -1,5 +1,6 @@
 package com.myocean.domain.diary.entity;
 
+import com.myocean.domain.diary.enums.AnalysisStatus;
 import com.myocean.global.common.BaseRDBEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,22 +11,26 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@Table(name = "diary_analysis_summary")
+@Table(name = "diary_analysis_summary",
+        indexes = {
+                @Index(name = "idx_summary_diary_id", columnList = "diary_id", unique = true)
+        }
+)
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"diary"})
-@EqualsAndHashCode(of = "id",  callSuper = true)
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class DiaryAnalysisSummary extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "diary_id", nullable = false)
-    private Integer diaryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "diary_id", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (diary_id) REFERENCES diaries(id) ON DELETE CASCADE"))
+    private Diary diary;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "big5_scores", nullable = false, columnDefinition = "jsonb")
@@ -41,7 +46,20 @@ public class DiaryAnalysisSummary extends BaseRDBEntity {
     @Column(name = "keywords", columnDefinition = "jsonb")
     private List<String> keywords;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "diary_id", insertable = false, updatable = false)
-    private Diary diary;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    @Builder.Default
+    private AnalysisStatus status = AnalysisStatus.PROCESSING;
+
+    public void updateStatus(AnalysisStatus status) {
+        this.status = status;
+    }
+
+    public void updateAnalysisData(Map<String, Double> big5Scores, String domainClassification,
+                                   String finalConclusion, List<String> keywords) {
+        this.big5Scores = big5Scores;
+        this.domainClassification = domainClassification;
+        this.finalConclusion = finalConclusion;
+        this.keywords = keywords;
+    }
 }

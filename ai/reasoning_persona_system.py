@@ -190,17 +190,17 @@ class ReasoningPersonaSystem:
         workflow = StateGraph(AgentState)
         
         # 노드 추가
-        workflow.add_node("domain_classification", self._classify_domain_node)
+        workflow.add_node("classify_domain", self._classify_domain_node)
         workflow.add_node("extraversion_agent", self._extraversion_node)
-        workflow.add_node("agreeableness_agent", self._agreeableness_node) 
+        workflow.add_node("agreeableness_agent", self._agreeableness_node)
         workflow.add_node("conscientiousness_agent", self._conscientiousness_node)
         workflow.add_node("neuroticism_agent", self._neuroticism_node)
         workflow.add_node("openness_agent", self._openness_node)
         workflow.add_node("final_synthesis", self._synthesis_node)
-        
+
         # 엣지 연결 (순차적 추론)
-        workflow.set_entry_point("domain_classification")
-        workflow.add_edge("domain_classification", "extraversion_agent")
+        workflow.set_entry_point("classify_domain")
+        workflow.add_edge("classify_domain", "extraversion_agent")
         workflow.add_edge("extraversion_agent", "agreeableness_agent")
         workflow.add_edge("agreeableness_agent", "conscientiousness_agent") 
         workflow.add_edge("conscientiousness_agent", "neuroticism_agent")

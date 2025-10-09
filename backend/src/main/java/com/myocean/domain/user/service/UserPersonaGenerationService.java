@@ -28,7 +28,6 @@ public class UserPersonaGenerationService {
 
     private final UserPersonaRepository userPersonaRepository;
     private final UserRepository userRepository;
-    private final Big5AverageCalculator big5AverageCalculator;
     private final PersonalityAnalysisService personalityAnalysisService;
     private final UserService userService;
     private final UserGameCountService userGameCountService;
@@ -41,7 +40,7 @@ public class UserPersonaGenerationService {
         User user = findUserById(userId);
 
         // 2. Big5 게임 평균 점수 계산
-        Big5AverageScores averageScores = big5AverageCalculator.calculateAverages(gameResults);
+        Big5AverageScores averageScores = Big5AverageCalculator.calculateAverages(gameResults);
         log.info("Big5 게임 평균 계산 완료 - O:{}, C:{}, E:{}, A:{}, N:{}",
                 averageScores.getO(), averageScores.getC(), averageScores.getE(),
                 averageScores.getA(), averageScores.getN());

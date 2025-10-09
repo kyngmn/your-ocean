@@ -5,6 +5,7 @@ import com.myocean.domain.diary.dto.response.DiaryCalendarResponse;
 import com.myocean.domain.diary.dto.response.DiaryResponse;
 import com.myocean.domain.diary.dto.response.DiaryAnalysisResponse;
 import com.myocean.domain.diary.service.DiaryService;
+import com.myocean.domain.diary.service.DiaryAnalysisStreamService;
 import com.myocean.global.security.userdetails.CustomUserDetails;
 import com.myocean.global.security.annotation.LoginMember;
 import com.myocean.response.ApiResponse;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
 @Slf4j
@@ -25,8 +27,9 @@ import org.springframework.web.bind.annotation.*;
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final DiaryAnalysisStreamService streamService;
 
-    @Operation(summary = "Create diary", description = "Create new diary")
+    @Operation(summary = "일기 생성", description = "일기 생성")
     @PostMapping
     public ApiResponse<DiaryResponse> createDiary(
             @Valid @RequestBody DiaryCreateRequest request,
@@ -37,7 +40,19 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-    @Operation(summary = "Get diary by ID", description = "Get diary by specific diary ID")
+    @Operation(summary = "일기 날짜로 조회", description = "특정 날짜의 일기를 조회합니다.")
+    @GetMapping
+    public ApiResponse<DiaryResponse> getDiaryByDate(
+            @Parameter(description = "Diary date (YYYY-MM-DD format)", example = "2024-02-15", required = true)
+            @RequestParam String date,
+            @LoginMember CustomUserDetails userDetails
+    ) {
+        Integer userId = extractUserId(userDetails);
+        DiaryResponse response = diaryService.getDiaryByDate(userId, date);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @Operation(summary = "일기 ID로 조회", description = "일기 ID로 조회")
     @GetMapping("/{diaryId}")
     public ApiResponse<DiaryResponse> getDiaryById(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
@@ -48,18 +63,7 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-    @Operation(summary = "Get diary by date", description = "Get diary by specific date")
-    @GetMapping("/date/{diaryDate}")
-    public ApiResponse<DiaryResponse> getDiaryByDate(
-            @Parameter(description = "Diary date (YYYY-MM-DD format)", example = "2024-02-15") @PathVariable String diaryDate,
-            @LoginMember CustomUserDetails userDetails) {
-
-        Integer userId = extractUserId(userDetails);
-        DiaryResponse response = diaryService.getDiaryByDate(userId, diaryDate);
-        return ApiResponse.onSuccess(response);
-    }
-
-    @Operation(summary = "Delete diary by ID", description = "Delete diary by specific diary ID")
+    @Operation(summary = "일기 id로 삭제", description = "일기 id로 삭제")
     @DeleteMapping("/{diaryId}")
     public ApiResponse<Void> deleteDiary(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
@@ -81,17 +85,26 @@ public class DiaryController {
         return ApiResponse.onSuccess(response);
     }
 
-
-    @Operation(summary = "다이어리 분석 결과 가져오기", description = "Get AI analysis result for specific diary")
+    @Operation(summary = "다이어리 분석 결과 가져오기", description = "다이어리 분석 결과 조회 (일반)")
     @GetMapping("/{diaryId}/analysis")
     public ApiResponse<DiaryAnalysisResponse> getDiaryAnalysis(
             @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
             @LoginMember CustomUserDetails userDetails
     ){
-
         Integer userId = extractUserId(userDetails);
         DiaryAnalysisResponse response = diaryService.getDiaryAnalysis(userId, diaryId);
         return ApiResponse.onSuccess(response);
+    }
+
+    @Operation(summary = "다이어리 분석 결과 스트리밍", description = "SSE를 통해 OCEAN 메시지를 하나씩 스트리밍합니다")
+    @GetMapping(value = "/{diaryId}/analysis/stream", produces = "text/event-stream")
+    public SseEmitter streamDiaryAnalysis(
+            @Parameter(description = "Diary ID", example = "1") @PathVariable Integer diaryId,
+            @LoginMember CustomUserDetails userDetails
+    ){
+        Integer userId = extractUserId(userDetails);
+        diaryService.getDiaryById(userId, diaryId);
+        return streamService.streamAnalysisResult(diaryId);
     }
 
     private Integer extractUserId(CustomUserDetails userDetails) {

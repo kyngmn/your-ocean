@@ -34,7 +34,7 @@ public class SurveyAnswer extends BaseRDBEntity {
     private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"))
     private User user;
 
     @Column(nullable = false)

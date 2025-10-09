@@ -6,9 +6,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "diary_analysis_messages")
+@Table(name = "diary_analysis_messages",
+        indexes = {
+                @Index(name = "idx_diary_created", columnList = "diary_id, created_at"),
+                @Index(name = "idx_diary_id", columnList = "diary_id")
+        }
+)
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,23 +24,17 @@ public class DiaryAnalysisMessage extends BaseRDBEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "diary_id", nullable = false)
-    private Integer diaryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "diary_id", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (diary_id) REFERENCES diaries(id) ON DELETE CASCADE"))
+    private Diary diary;
 
-    @Column(name = "sender_actor_id", nullable = false)
-    private Integer senderActorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_actor_id", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (sender_actor_id) REFERENCES actors(id) ON DELETE CASCADE"))
+    private Actor senderActor;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 
     @Column(name = "message_order")
     private Integer messageOrder;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "diary_id", insertable = false, updatable = false)
-    private Diary diary;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_actor_id", insertable = false, updatable = false)
-    private Actor senderActor;
 }

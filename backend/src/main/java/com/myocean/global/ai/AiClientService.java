@@ -103,6 +103,8 @@ public class AiClientService {
                     Map.class
             );
 
+            log.info("AI 서버 응답 - diaryId: {}, response: {}", diaryId, response.getBody());
+
             if (response.getBody() != null && (Boolean) response.getBody().get("success")) {
                 return response.getBody();
             } else {

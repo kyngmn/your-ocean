@@ -3,15 +3,15 @@ package com.myocean.domain.survey.calculator;
 import com.myocean.domain.survey.entity.SurveyAnswer;
 import com.myocean.response.exception.GeneralException;
 import com.myocean.response.status.ErrorStatus;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Component
+@UtilityClass
 @Slf4j
 public class SurveyResultCalculator {
 
@@ -64,7 +64,7 @@ public class SurveyResultCalculator {
      * @param responses 120개의 설문 응답
      * @return N1~C6 30개 지표 점수 (각 4~20)
      */
-    public Map<String, Integer> calculateBigFiveScores(List<SurveyAnswer> responses) {
+    public static Map<String, Integer> calculateBigFiveScores(List<SurveyAnswer> responses) {
         log.info("설문 응답 계산 시작 - 응답 수: {}", responses.size());
 
         if (responses.size() != TOTAL_QUESTIONS) {
@@ -91,7 +91,7 @@ public class SurveyResultCalculator {
 
     // ---------------- 계산 로직 ----------------
 
-    private Map<String, Integer> scoreFacets(Map<Integer, Integer> responseMap) {
+    private static Map<String, Integer> scoreFacets(Map<Integer, Integer> responseMap) {
         Map<String, Integer> out = new LinkedHashMap<>();
         for (FacetDef fd : FACETS.values()) {
             int sum = 0;
@@ -106,7 +106,7 @@ public class SurveyResultCalculator {
         return 6 - v; // 1↔5, 2↔4, 3→3
     }
 
-    private void validateResponses(Map<Integer, Integer> responses) {
+    private static void validateResponses(Map<Integer, Integer> responses) {
         for (int i = 1; i <= TOTAL_QUESTIONS; i++) {
             Integer v = responses.get(i);
             if (v == null) {

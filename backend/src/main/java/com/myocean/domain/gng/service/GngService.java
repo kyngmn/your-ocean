@@ -32,7 +32,7 @@ public class GngService {
 
         // 게임 세션이 존재하고 해당 사용자의 것인지 검증
         GameSession gameSession = gameSessionRepository
-                .findByIdAndUserId(sessionId, userId)
+                .findByIdAndUser_Id(sessionId, userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.GAME_SESSION_NOT_FOUND));
 
         // GNG 게임인지 검증

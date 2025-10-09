@@ -19,7 +19,7 @@ public interface UserPersonaRepository extends JpaRepository<UserPersona, Long> 
     /**
      * 페르소나를 가진 사용자 ID 목록 조회
      */
-    @Query("SELECT DISTINCT up.userId FROM UserPersona up WHERE up.userId IN :userIds AND up.deletedAt IS NULL")
+    @Query("SELECT DISTINCT up.user.id FROM UserPersona up WHERE up.user.id IN :userIds AND up.deletedAt IS NULL")
     Set<Integer> findUserIdsWithPersona(@Param("userIds") List<Integer> userIds);
 
 }
