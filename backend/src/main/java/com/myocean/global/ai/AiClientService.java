@@ -133,12 +133,16 @@ public class AiClientService {
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<Map> response = restTemplate.postForEntity(
-                    aiServerUrl + "/api/v1/my-chat/send",
+                    aiServerUrl + "/ai/chat",
                     entity,
                     Map.class
             );
 
             if (response.getBody() != null) {
+                log.info("==================== AI 서버 응답 ====================");
+                log.info("AI 서버 응답: {}", response.getBody());
+                log.info("====================================================");
+
                 // AI 서버에서 직접 분석 결과를 반환하므로 success 래핑 추가
                 Map<String, Object> wrappedResponse = new HashMap<>();
                 wrappedResponse.put("success", true);
