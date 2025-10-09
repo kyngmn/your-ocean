@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ActorRepository extends JpaRepository<Actor, Integer> {
+public interface ActorRepository extends JpaRepository<Actor, Long> {
 
     @Query("SELECT a FROM Actor a WHERE a.kind = :kind AND a.user.id = :userId")
     Optional<Actor> findByKindAndUser_Id(@Param("kind") ActorKind kind, @Param("userId") Integer userId);

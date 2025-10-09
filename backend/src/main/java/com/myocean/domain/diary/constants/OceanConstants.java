@@ -11,21 +11,21 @@ import java.util.Map;
 public class OceanConstants {
 
     // OCEAN 모델 Actor ID 매핑 (data.sql에 정의된 SYSTEM Actor)
-    public static final Map<String, Integer> OCEAN_TYPE_TO_ACTOR_ID = Map.of(
-            "Openness", 1,
-            "Conscientiousness", 2,
-            "Extraversion", 3,
-            "Agreeableness", 4,
-            "Neuroticism", 5
+    public static final Map<String, Long> OCEAN_TYPE_TO_ACTOR_ID = Map.of(
+            "Openness", 1L,
+            "Conscientiousness", 2L,
+            "Extraversion", 3L,
+            "Agreeableness", 4L,
+            "Neuroticism", 5L
     );
 
     // Actor ID → OCEAN 타입 매핑
-    public static final Map<Integer, OceanInfo> ACTOR_ID_TO_OCEAN_INFO = Map.of(
-            1, new OceanInfo("OPENNESS", "개방성"),
-            2, new OceanInfo("CONSCIENTIOUSNESS", "성실성"),
-            3, new OceanInfo("EXTRAVERSION", "외향성"),
-            4, new OceanInfo("AGREEABLENESS", "친화성"),
-            5, new OceanInfo("NEUROTICISM", "신경성")
+    public static final Map<Long, OceanInfo> ACTOR_ID_TO_OCEAN_INFO = Map.of(
+            1L, new OceanInfo("OPENNESS", "개방성"),
+            2L, new OceanInfo("CONSCIENTIOUSNESS", "성실성"),
+            3L, new OceanInfo("EXTRAVERSION", "외향성"),
+            4L, new OceanInfo("AGREEABLENESS", "친화성"),
+            5L, new OceanInfo("NEUROTICISM", "신경성")
     );
 
     // Big5 점수 키 정규화 매핑 (AI 응답의 다양한 형태 → DB 키)

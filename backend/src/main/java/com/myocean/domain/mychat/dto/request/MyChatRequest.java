@@ -1,4 +1,4 @@
-package com.myocean.domain.mychat.dto;
+package com.myocean.domain.mychat.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -17,6 +17,6 @@ public class MyChatRequest {
 
     @NotBlank(message = "메시지는 필수입니다")
     @Size(max = 2000, message = "메시지는 2000자 이하여야 합니다")
-    @Schema(description = "채팅 메시지", example = "오늘 기분이 좋지 않아요")
+    @Schema(description = "채팅 메시지", example = "오늘 기분이 좋지 않았어")
     private String message;
 }

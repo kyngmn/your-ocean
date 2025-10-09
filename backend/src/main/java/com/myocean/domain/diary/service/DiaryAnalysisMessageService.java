@@ -34,9 +34,9 @@ public class DiaryAnalysisMessageService {
         log.info("OCEAN 분석 메시지 저장 - userId: {}, diaryId: {}", userId, diaryId);
 
         int messageOrder = 1;
-        for (Map.Entry<String, Integer> entry : OceanConstants.OCEAN_TYPE_TO_ACTOR_ID.entrySet()) {
+        for (Map.Entry<String, Long> entry : OceanConstants.OCEAN_TYPE_TO_ACTOR_ID.entrySet()) {
             String oceanType = entry.getKey();
-            Integer actorId = entry.getValue();
+            Long actorId = entry.getValue();
 
             String message = (String) agentResponses.get(oceanType);
             if (message != null) {
@@ -50,7 +50,7 @@ public class DiaryAnalysisMessageService {
      * 개별 채팅 메시지 저장
      */
     @Transactional
-    public void saveChatMessage(Integer diaryId, Integer actorId, String message, Integer messageOrder) {
+    public void saveChatMessage(Integer diaryId, Long actorId, String message, Integer messageOrder) {
         DiaryAnalysisMessage chatMessage = DiaryAnalysisMessage.builder()
                 .diary(diaryRepository.getReferenceById(diaryId))  // 프록시 사용
                 .senderActor(actorRepository.getReferenceById(actorId))  // 프록시 사용

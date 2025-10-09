@@ -113,7 +113,7 @@ public class FriendChatService {
         return messages.map(FriendChatResponse::from);
     }
 
-    private FriendChatMessage saveChatMessage(Integer roomId, Integer senderActorId, String message) {
+    private FriendChatMessage saveChatMessage(Integer roomId, Long senderActorId, String message) {
         FriendChatMessage chatMessage = FriendChatMessage.builder()
                 .roomId(roomId)
                 .senderActorId(senderActorId)

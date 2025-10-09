@@ -1,8 +1,8 @@
 package com.myocean.domain.mychat.controller;
 
-import com.myocean.domain.mychat.dto.MyChatRequest;
-import com.myocean.domain.mychat.dto.MyChatResponse;
-import com.myocean.domain.mychat.dto.MyChatHistoryResponse;
+import com.myocean.domain.mychat.dto.request.MyChatRequest;
+import com.myocean.domain.mychat.dto.response.MyChatResponse;
+import com.myocean.domain.mychat.dto.response.MyChatHistoryResponse;
 import com.myocean.domain.mychat.service.MyChatService;
 import com.myocean.global.security.userdetails.CustomUserDetails;
 import com.myocean.global.security.annotation.LoginMember;

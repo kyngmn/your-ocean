@@ -1,13 +1,13 @@
 package com.myocean.domain.mychat.service;
 
-import com.myocean.domain.mychat.dto.MyChatRequest;
-import com.myocean.domain.mychat.dto.MyChatResponse;
+import com.myocean.domain.mychat.dto.request.MyChatRequest;
+import com.myocean.domain.mychat.dto.response.MyChatResponse;
 import com.myocean.domain.mychat.entity.MyChatMessage;
 import com.myocean.domain.mychat.repository.MyChatRepository;
 import com.myocean.domain.mychat.converter.MyChatConverter;
 import com.myocean.domain.user.entity.Actor;
-import com.myocean.domain.user.enums.ActorKind;
 import com.myocean.domain.user.repository.ActorRepository;
+import com.myocean.domain.user.repository.UserRepository;
 import com.myocean.global.ai.AiClientService;
 import com.myocean.global.enums.BigCode;
 import com.myocean.global.openai.chatanalysis.service.ChatAnalysisRefinementService;
@@ -29,13 +29,15 @@ public class MyChatService {
 
     private final MyChatRepository myChatRepository;
     private final ActorRepository actorRepository;
+    private final UserRepository userRepository;
     private final AiClientService aiClientService;
     private final ChatAnalysisRefinementService chatAnalysisRefinementService;
+
 
     @Transactional
     public MyChatResponse sendMessage(Integer userId, MyChatRequest request) {
         // 1. 사용자 메시지 저장 (sender_actor_id = user_id, 읽음 처리)
-        MyChatMessage userMessage = saveChatMessage(userId, userId, request.getMessage(), true);
+        MyChatMessage userMessage = saveChatMessage(userId, userId.longValue(), request.getMessage(), true);
 
         // 2. AI 분석 플로우 시작 (실패해도 사용자 메시지는 저장됨)
         try {
@@ -114,10 +116,10 @@ public class MyChatService {
     }
 
 
-    private MyChatMessage saveChatMessage(Integer userId, Integer senderActorId, String message, Boolean isRead) {
+    private MyChatMessage saveChatMessage(Integer userId, Long senderActorId, String message, Boolean isRead) {
         MyChatMessage chatMessage = MyChatMessage.builder()
-                .userId(userId)
-                .senderActorId(senderActorId)
+                .user(userRepository.getReferenceById(userId))
+                .senderActor(actorRepository.getReferenceById(senderActorId))
                 .message(message)
                 .isRead(isRead)
                 .build();
@@ -126,7 +128,7 @@ public class MyChatService {
     }
 
     // 기존 메서드 호환성 유지 (기본값: false)
-    private MyChatMessage saveChatMessage(Integer userId, Integer senderActorId, String message) {
+    private MyChatMessage saveChatMessage(Integer userId, Long senderActorId, String message) {
         return saveChatMessage(userId, senderActorId, message, false);
     }
 
@@ -149,7 +151,7 @@ public class MyChatService {
         // TODO: 구현
 
         // 2. 없으면 BigCode에 해당하는 기본 Actor 사용 (ID 1-5)
-        Integer actorId = com.myocean.domain.user.constants.ActorConstants.getDefaultActorId(bigCode);
+        Long actorId = com.myocean.domain.user.constants.ActorConstants.getDefaultActorId(bigCode);
         return findOrCreatePersonaActor(userId);
     }
 
@@ -213,7 +215,7 @@ public class MyChatService {
 
                     if (actorId != null) {
                         // AI 메시지 저장 (안읽음으로 설정)
-                        saveChatMessage(userId, actorId, response, false);
+                        saveChatMessage(userId, actorId.longValue(), response, false);
 
                         log.debug("성격 응답 저장 - personality: {}, actorId: {}, userId: {}",
                                 personalityName, actorId, userId);
