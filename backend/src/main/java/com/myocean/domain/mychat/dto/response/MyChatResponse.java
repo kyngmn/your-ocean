@@ -1,4 +1,4 @@
-package com.myocean.domain.mychat.dto;
+package com.myocean.domain.mychat.dto.response;
 
 import com.myocean.domain.user.enums.ActorKind;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,7 +26,7 @@ public class MyChatResponse {
     private ActorKind senderKind;
 
     @Schema(description = "발신자 액터 ID", example = "1")
-    private Integer senderActorId;
+    private Long senderActorId;
 
     @Schema(description = "읽음 여부", example = "false")
     private Boolean isRead;

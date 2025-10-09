@@ -134,7 +134,6 @@ public class UserService {
         reportRepository.deleteByUserId(userId);
         big5ResultRepository.deleteByUserId(userId);
         friendRepository.deleteByUserIdOrFriendId(userId);
-        myChatRepository.deleteByUserId(userId);
 
         // User 삭제 (cascade로 UserPersona, Actor도 삭제)
         userRepository.delete(user);

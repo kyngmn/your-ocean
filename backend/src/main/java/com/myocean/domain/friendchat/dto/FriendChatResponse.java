@@ -30,7 +30,7 @@ public class FriendChatResponse {
     private ActorKind senderKind;
 
     @Schema(description = "발신자 액터 ID", example = "1")
-    private Integer senderActorId;
+    private Long senderActorId;
 
     @Schema(description = "생성 시간")
     private LocalDateTime createdAt;

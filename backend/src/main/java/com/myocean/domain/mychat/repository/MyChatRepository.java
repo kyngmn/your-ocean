@@ -14,17 +14,14 @@ import java.util.List;
 @Repository
 public interface MyChatRepository extends JpaRepository<MyChatMessage, Long> {
 
-    @Query("SELECT m FROM MyChatMessage m WHERE m.userId = :userId AND m.isRead = true ORDER BY m.createdAt DESC")
+    @Query("SELECT m FROM MyChatMessage m WHERE m.user.id = :userId ORDER BY m.createdAt DESC")
     Page<MyChatMessage> findByUserIdOrderByCreatedAtDesc(@Param("userId") Integer userId, Pageable pageable);
 
-    @Query("SELECT m FROM MyChatMessage m WHERE m.userId = :userId ORDER BY m.createdAt DESC")
-    List<MyChatMessage> findByUserIdOrderByCreatedAtDesc(@Param("userId") Integer userId);
-
-    @Query("SELECT COUNT(m) FROM MyChatMessage m WHERE m.userId = :userId")
+    @Query("SELECT COUNT(m) FROM MyChatMessage m WHERE m.user.id = :userId")
     Long countByUserId(@Param("userId") Integer userId);
 
     // 안읽은 메시지 조회 (폴링용)
-    @Query("SELECT m FROM MyChatMessage m WHERE m.userId = :userId AND m.isRead = false ORDER BY m.createdAt ASC")
+    @Query("SELECT m FROM MyChatMessage m WHERE m.user.id = :userId AND m.isRead = false ORDER BY m.createdAt ASC")
     List<MyChatMessage> findByUserIdAndIsReadFalseOrderByCreatedAtAsc(@Param("userId") Integer userId);
 
     // 읽음 처리 (복수 메시지)
@@ -33,9 +30,9 @@ public interface MyChatRepository extends JpaRepository<MyChatMessage, Long> {
     void updateIsReadByIds(@Param("messageIds") List<Long> messageIds);
 
     // 특정 사용자의 안읽은 메시지 개수
-    @Query("SELECT COUNT(m) FROM MyChatMessage m WHERE m.userId = :userId AND m.isRead = false")
+    @Query("SELECT COUNT(m) FROM MyChatMessage m WHERE m.user.id = :userId AND m.isRead = false")
     Long countUnreadByUserId(@Param("userId") Integer userId);
 
     // 성능 최적화: 특정 사용자의 모든 채팅 메시지를 효율적으로 삭제
-    void deleteByUserId(Integer userId);
+    void deleteByUser_Id(Integer userId);
 }

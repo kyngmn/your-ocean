@@ -26,7 +26,7 @@ public class FriendChatMessage {
     private Integer roomId;
 
     @Column(name = "sender_actor_id", nullable = false)
-    private Integer senderActorId;
+    private Long senderActorId;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
