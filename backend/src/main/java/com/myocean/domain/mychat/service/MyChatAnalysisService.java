@@ -1,5 +1,8 @@
 package com.myocean.domain.mychat.service;
 
+import com.myocean.domain.big5.enums.Big5SourceType;
+import com.myocean.domain.big5.service.Big5CalculationService;
+import com.myocean.domain.diary.util.DiaryAnalysisParser;
 import com.myocean.domain.mychat.entity.MyChatMessage;
 import com.myocean.domain.mychat.repository.MyChatRepository;
 import com.myocean.global.enums.AnalysisStatus;
@@ -23,6 +26,7 @@ public class MyChatAnalysisService {
 
     private final MyChatMessageService messageService;
     private final MyChatRepository myChatRepository;
+    private final Big5CalculationService big5CalculationService;
 
     /**
      * AI 서버에서 받은 분석 결과를 파싱하고 저장 + SSE 전송
@@ -52,10 +56,33 @@ public class MyChatAnalysisService {
         // 상위 3개 성격 응답 저장
         List<MyChatMessage> savedMessages = messageService.saveTopThreePersonaResponses(userId, agentResponses);
 
+        // Big5Result에도 저장
+        saveBig5Result(userId, messageId, actualData);
+
         // SSE로 스트리밍
         messageService.streamMessages(userId, savedMessages);
 
         log.info("AI 분석 결과 파싱 및 저장 완료 - userId: {}, messageId: {}", userId, messageId);
+    }
+
+    /**
+     * Big5 점수를 Big5Result 테이블에 저장
+     */
+    private void saveBig5Result(Integer userId, Long messageId, Map<String, Object> actualData) {
+        try {
+            Map<String, Double> big5Scores = DiaryAnalysisParser.parseBig5Scores(actualData);
+
+            if (big5Scores == null || big5Scores.isEmpty()) {
+                log.warn("Big5 점수가 없어서 Big5Result 저장 스킵 - messageId: {}", messageId);
+                return;
+            }
+
+            big5CalculationService.saveBig5Result(userId, Big5SourceType.MY_CHAT, messageId, big5Scores);
+        } catch (Exception e) {
+            log.error("Big5Result 저장 실패 - userId: {}, messageId: {}, error: {}",
+                    userId, messageId, e.getMessage(), e);
+            // Big5Result 저장 실패해도 전체 프로세스는 계속 진행
+        }
     }
 
     /**

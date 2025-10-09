@@ -1,6 +1,7 @@
 package com.myocean.domain.diary.service;
 
-import com.myocean.domain.big5.service.Big5DiaryCalculationService;
+import com.myocean.domain.big5.enums.Big5SourceType;
+import com.myocean.domain.big5.service.Big5CalculationService;
 import com.myocean.global.enums.AnalysisStatus;
 import com.myocean.domain.diary.util.DiaryAnalysisParser;
 import com.myocean.domain.diary.entity.DiaryAnalysisMessage;
@@ -25,7 +26,7 @@ public class DiaryAnalysisService {
 
     private final DiaryAnalysisMessageService messageService;
     private final DiaryAnalysisSummaryService summaryService;
-    private final Big5DiaryCalculationService big5DiaryCalculationService;
+    private final Big5CalculationService big5CalculationService;
 
     /**
      * AI 서버에서 받은 분석 결과를 파싱하고 DB에 저장
@@ -70,7 +71,7 @@ public class DiaryAnalysisService {
                 return;
             }
 
-            big5DiaryCalculationService.saveDiaryBig5Result(userId, diaryId, big5Scores);
+            big5CalculationService.saveBig5Result(userId, Big5SourceType.DIARY, diaryId.longValue(), big5Scores);
         } catch (Exception e) {
             log.error("Big5Result 저장 실패 - userId: {}, diaryId: {}, error: {}",
                     userId, diaryId, e.getMessage(), e);

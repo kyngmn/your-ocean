@@ -71,7 +71,6 @@ public class FriendChatService {
             Actor personaActor = findOrCreatePersonaActor(userId);
             FriendChatMessage aiMessage = saveChatMessage(request.getRoomId(), personaActor.getId(), finalResponse);
 
-            // TODO: agent_responses 파싱해서 5개 페르소나별 메시지 저장
             parseAndSaveAgentResponses(userId, request.getRoomId(), aiResponse);
 
             return FriendChatResponse.from(aiMessage);
