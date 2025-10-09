@@ -103,9 +103,7 @@ public class DiaryController {
             @LoginMember CustomUserDetails userDetails
     ){
         Integer userId = extractUserId(userDetails);
-        // 권한 확인 (다이어리 소유자인지)
         diaryService.getDiaryById(userId, diaryId);
-
         return streamService.streamAnalysisResult(diaryId);
     }
 

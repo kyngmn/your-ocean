@@ -83,7 +83,7 @@ public class DiaryService {
         try {
             return LocalDate.parse(date);
         } catch (Exception e) {
-            throw new GeneralException(ErrorStatus.INVALID_YEAR_MONTH_FORMAT);
+            throw new GeneralException(ErrorStatus.INVALID_DATE_FORMAT);
         }
     }
 
@@ -132,19 +132,22 @@ public class DiaryService {
         diaryRepository.findByIdAndUserIdAndNotDeleted(diaryId, userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.DIARY_NOT_FOUND));
 
-        // 저장된 분석 메시지들 조회
-        List<DiaryAnalysisMessage> analysisMessages = diaryAnalysisService.getStoredAnalysisMessages(userId, diaryId);
+        // 실제 분석 상태 조회
+        String analysisStatus = diaryAnalysisSummaryService.getAnalysisStatus(diaryId).name();
 
-        // 분석 결과가 있으면 완료 상태로 반환
+        // 저장된 분석 메시지들 조회
+        List<DiaryAnalysisMessage> analysisMessages = diaryAnalysisService.getStoredAnalysisMessages(diaryId);
+
+        // 분석 결과가 있으면 메시지와 요약 정보를 포함해서 반환
         if (!analysisMessages.isEmpty()) {
-            return buildDiaryAnalysisResponse(diaryId, analysisMessages, "COMPLETED");
+            return buildDiaryAnalysisResponse(diaryId, analysisMessages, analysisStatus);
         }
 
-        // 분석 결과가 없으면 처리 중 상태로 반환
-        log.info("분석 진행 중 - diaryId: {}", diaryId);
+        // 분석 결과가 없으면 상태만 반환
+        log.info("분석 결과 없음 - diaryId: {}, status: {}", diaryId, analysisStatus);
         return DiaryAnalysisResponse.builder()
                 .diaryId(diaryId)
-                .status("PROCESSING")
+                .status(analysisStatus)
                 .build();
     }
 

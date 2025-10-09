@@ -315,4 +315,4 @@ COMMIT;
 
 select * from actors;
 
-select * from diary_analysis_summary;
+select * from big5_results;

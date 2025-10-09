@@ -11,5 +11,4 @@ public interface DiaryAnalysisSummaryRepository extends JpaRepository<DiaryAnaly
 
     Optional<DiaryAnalysisSummary> findByDiaryId(Integer diaryId);
 
-    void deleteByDiaryId(Integer diaryId);
 }
