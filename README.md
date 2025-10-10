@@ -1,4 +1,4 @@
-# 너의 OCEAN은
+# 나의 OCEAN은
 
 <div align="center">
 
@@ -34,20 +34,20 @@
 
 <div align="center">
   <a href="https://youtu.be/ETfpIRG7VT0" target="_blank">
-    <img src="https://img.youtube.com/vi/ETfpIRG7VT0/maxresdefault.jpg" alt="너의 OCEAN은 프로젝트 소개 영상" width="80%">
+    <img src="https://img.youtube.com/vi/ETfpIRG7VT0/maxresdefault.jpg" alt="나의 OCEAN은 프로젝트 소개 영상" width="80%">
   </a>
-  <p><em>너의 OCEAN은 프로젝트 소개 영상 - <a href="https://youtu.be/ETfpIRG7VT0" target="_blank">YouTube에서 보기</a></em></p>
+  <p><em>나의 OCEAN은 프로젝트 소개 영상 - <a href="https://youtu.be/ETfpIRG7VT0" target="_blank">YouTube에서 보기</a></em></p>
 </div>
 
 ---
 
 ### 개요
 
-'**유미의 세포들**'과 '**인사이드 아웃**'에서 영감을 받아 탄생한 **너의 OCEAN은**은 Big Five 성격 이론(OCEAN)을 기반으로 사용자의 내면을 5가지 페르소나 세포로 시각화하는 혁신적인 자아 탐색 플랫폼입니다.
+'**유미의 세포들**'과 '**인사이드 아웃**'에서 영감을 받아 탄생한 **나의 OCEAN은**은 Big Five 성격 이론(OCEAN)을 기반으로 사용자의 내면을 5가지 페르소나 세포로 시각화하는 혁신적인 자아 탐색 플랫폼입니다.
 
 ### 배경 및 목적
 
-기존의 성격 검사는 단순히 결과를 보여주는 데 그치며, 자기보고식 검사의 한계로 인해 주관적인 편향이 발생할 수 있습니다. **너의 OCEAN은**은 이러한 한계를 극복하기 위해:
+기존의 성격 검사는 단순히 결과를 보여주는 데 그치며, 자기보고식 검사의 한계로 인해 주관적인 편향이 발생할 수 있습니다. **나의 OCEAN은**은 이러한 한계를 극복하기 위해:
 
 - **행동 기반 데이터**와 **자기보고식 검사**를 결합한 하이브리드 분석
 - **AI 에이전트**와의 실시간 대화를 통한 몰입형 자기 성찰

@@ -118,7 +118,7 @@ export default function Home() {
     <>
       {user && (
         <>
-          <Header title="너의 OCEAN은" />
+          <Header title="나의 OCEAN은" />
           <main className="page has-header has-bottom-nav bg-[url(/image/background.gif)] bg-cover bg-center bg-no-repeat">
             <div className="section flex flex-col gap-4 animate-fade-in">
               {/* 환영 메시지 */}

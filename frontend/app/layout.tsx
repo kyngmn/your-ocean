@@ -16,7 +16,7 @@ const PyeojinGothic = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "너의 OCEAN은",
+  title: "나의 OCEAN은",
   description: "당신의 AI 페르소나와 함께 성격의 바다를 항해하며 진정한 나를 발견해보세요."
 }
 
