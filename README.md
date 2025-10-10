@@ -319,12 +319,9 @@
 
 #### 외부 데이터 연동
 **지원 플랫폼**
-- **Notion**: 개인 노트 및 일정 데이터 통합
-- **MCP (Model Context Protocol)**: 확장 가능한 외부 데이터 소스 연동
 - 향후 Google Calendar, Todoist 등 확장 예정
 
 **연동 효과**
-- 일정과 성격 분석 통합
 - 생산성 패턴과 성격 특성 연결
 - 더 풍부한 맥락 정보 기반 인사이트
 
@@ -721,20 +718,14 @@ docs: Update API documentation for personality test
 
 ## 팀원 소개
 
-| 역할 | 이름 | 담당 업무 |
+| 이름 | 역할 | 담당 업무 |
 |------|------|----------|
-| **Frontend Developer** | [김진효](https://github.com/Pong0882) | 프론트엔드 개발, OAuth2 인증 시스템 |
-| **Backend Developer** | [류지선](https://github.com/jisun24) | 백엔드 개발, 게임 기능 (풍선게임, 최후통첩게임) |
-| **DevOps Engineer** | [박재호](https://github.com/ppnyoong9) | 인프라 구축, 와이어프레임 설계, 온보딩/게임 기능 화면 구현 |
-| **AI/ML Engineer** | [정봉기](https://github.com/JB0527) | LangChain AI 에이전트 시스템 구축, Multi-Agent 페르소나 시스템, FastAPI 서버 개발 |
-| **Frontend Developer** | [최경민](https://github.com/kyngmn) | 프론트엔드 개발, 아키텍처 설계, 채팅 기능 구현 |
-| **Backend Lead** | [황지현](https://github.com/sjihyun0756) | 백엔드 총괄, AI 응답 파싱 개선 |
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+| [김진효](https://github.com/Pong0882) | **Frontend Developer** | 와이어프레임 설계, 온보딩/설문/게임/친구/리포트 차트 기능 구현  |
+| [류지선](https://github.com/jisun24) | **Backend Developer** | 게임 기능 (풍선게임, 최후통첩게임) |
+| [박재호](https://github.com/ppnyoong9) | **DevOps Engineer** | 인프라 구축, OAuth2.0 개발 |
+| [정봉기](https://github.com/JB0527) | **AI/ML Engineer** | LangChain AI 에이전트 시스템 구축 |
+| [최경민](https://github.com/kyngmn) | **Frontend Developer** | 아키텍처 설계, 일기/채팅 기능 구현 |
+| [황지현](https://github.com/sjihyun0756) | **Backend Lead** | 백엔드 기능 전반 구현, AI 응답 파싱 개선 |
 
 ---
 
