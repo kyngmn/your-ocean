@@ -111,8 +111,8 @@
 처음 방문하는 사용자와 페르소나를 생성한 사용자를 위한 맞춤형 홈 화면
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[홈]페르소나존재X.png" alt="홈 - 페르소나 없음" width="45%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[홈]페르소나존재.png" alt="홈 - 페르소나 있음" width="45%">
+  <img src="docs/산출물/[홈]페르소나존재X.png" alt="홈 - 페르소나 없음" width="45%">
+  <img src="docs/산출물/[홈]페르소나존재.png" alt="홈 - 페르소나 있음" width="45%">
   <p><em>왼쪽: 처음 방문 시 | 오른쪽: 페르소나 생성 후</em></p>
 </div>
 
@@ -120,8 +120,8 @@
 사용자의 성격을 OCEAN 5요인으로 분석하는 온보딩 프로세스
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[BIG5]온보딩.png" alt="Big5 온보딩" width="45%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[BIG5]설문진행.png" alt="Big5 설문" width="45%">
+  <img src="docs/산출물/[BIG5]온보딩.png" alt="Big5 온보딩" width="45%">
+  <img src="docs/산출물/[BIG5]설문진행.png" alt="Big5 설문" width="45%">
   <p><em>왼쪽: 온보딩 시작 | 오른쪽: 설문 진행</em></p>
 </div>
 
@@ -129,14 +129,14 @@
 5가지 성격 요인별 페르소나 세포 시각화 및 상세 분석
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[나의페르소나]메인.png" alt="페르소나 메인" width="60%">
+  <img src="docs/산출물/[나의페르소나]메인.png" alt="페르소나 메인" width="60%">
   <p><em>페르소나 세포들의 시각화 및 성격 요인 분석</em></p>
 </div>
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[SELF리포트]개방성.png" alt="개방성 리포트" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[SELF리포트]성실성.png" alt="성실성 리포트" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[SELF리포트]외향성.png" alt="외향성 리포트" width="30%">
+  <img src="docs/산출물/[SELF리포트]개방성.png" alt="개방성 리포트" width="30%">
+  <img src="docs/산출물/[SELF리포트]성실성.png" alt="성실성 리포트" width="30%">
+  <img src="docs/산출물/[SELF리포트]외향성.png" alt="외향성 리포트" width="30%">
   <p><em>각 성격 요인별 상세 리포트 (개방성, 성실성, 외향성)</em></p>
 </div>
 
@@ -160,7 +160,7 @@
 게임 플레이를 통한 암묵적 성격 측정
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임]메인.png" alt="게임 메인" width="45%">
+  <img src="docs/산출물/[게임]메인.png" alt="게임 메인" width="45%">
   <p><em>3가지 게임을 통한 행동 패턴 분석</em></p>
 </div>
 
@@ -169,9 +169,9 @@
 
 **풍선 게임 (위험 감수 성향 측정)**
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_버블]설명(1).png" alt="풍선게임 설명" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_버블]게임진행.png" alt="풍선게임 진행" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_버블]결과.png" alt="풍선게임 결과" width="30%">
+  <img src="docs/산출물/[게임_버블]설명(1).png" alt="풍선게임 설명" width="30%">
+  <img src="docs/산출물/[게임_버블]게임진행.png" alt="풍선게임 진행" width="30%">
+  <img src="docs/산출물/[게임_버블]결과.png" alt="풍선게임 결과" width="30%">
 </div>
 
 <details>
@@ -188,9 +188,9 @@
 
 **최후통첩 게임 (공정성 및 협력 성향 측정)**
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_보물]설명(1).png" alt="보물게임 설명" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_보물]진행_제안자_거절가능_1.png" alt="보물게임 진행" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_보물]결과.png" alt="보물게임 결과" width="30%">
+  <img src="docs/산출물/[게임_보물]설명(1).png" alt="보물게임 설명" width="30%">
+  <img src="docs/산출물/[게임_보물]진행_제안자_거절가능_1.png" alt="보물게임 진행" width="30%">
+  <img src="docs/산출물/[게임_보물]결과.png" alt="보물게임 결과" width="30%">
 </div>
 
 <details>
@@ -205,9 +205,9 @@
 
 **상어 피하기 게임 (스트레스 대처 및 협력 성향 측정)**
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_상어]설명(1).png" alt="상어게임 설명" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_상어]게임진행.png" alt="상어게임 진행" width="30%">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[게임_상어]결과.png" alt="상어게임 결과" width="30%">
+  <img src="docs/산출물/[게임_상어]설명(1).png" alt="상어게임 설명" width="30%">
+  <img src="docs/산출물/[게임_상어]게임진행.png" alt="상어게임 진행" width="30%">
+  <img src="docs/산출물/[게임_상어]결과.png" alt="상어게임 결과" width="30%">
 </div>
 
 <details>
@@ -226,7 +226,7 @@
 자기보고식 검사와 행동 기반 분석의 통합 리포트
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/산출물/[FINAL리포트]리포트메인.png" alt="최종 리포트" width="60%">
+  <img src="docs/산출물/[FINAL리포트]리포트메인.png" alt="최종 리포트" width="60%">
   <p><em>'내가 생각하는 나' vs '실제 나'의 간극 시각화</em></p>
 </div>
 
@@ -238,28 +238,28 @@
 사용자의 전체 경험 흐름을 시각화한 다이어그램입니다.
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/기획/[너의OCEAN은] UserFlow.png" alt="User Flow" width="80%">
+  <img src="docs/기획/[너의OCEAN은] UserFlow.png" alt="User Flow" width="80%">
 </div>
 
 #### 와이어프레임
 주요 화면 구성과 UI/UX 설계입니다.
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/기획/[너의OCEAN은] 와이어프레임.png" alt="Wireframe" width="80%">
+  <img src="docs/기획/[너의OCEAN은] 와이어프레임.png" alt="Wireframe" width="80%">
 </div>
 
 #### API 설계
 백엔드 API 엔드포인트 구조입니다.
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/기획/[너의OCEAN은] API.png" alt="API Design" width="80%">
+  <img src="docs/기획/[너의OCEAN은] API.png" alt="API Design" width="80%">
 </div>
 
 #### ERD (Entity Relationship Diagram)
 데이터베이스 구조 및 테이블 관계도입니다.
 
 <div align="center">
-  <img src="docs/특화프로젝트_너의OCEAN은/기획/[너의OCEAN은]ERD.png" alt="ERD" width="80%">
+  <img src="docs/기획/[너의OCEAN은]ERD.png" alt="ERD" width="80%">
 </div>
 
 ---
@@ -754,11 +754,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### 기획 문서
 - [프로젝트 기획안](docs/기획안.md)
 - [요구사항 명세서](docs/요구사항%20명세서.md)
-- [기능 정의서](docs/특화프로젝트_너의OCEAN은/기획/[너의OCEAN은]기능정의서.pdf)
+- [기능 정의서](docs/기획/[너의OCEAN은]기능정의서.pdf)
 
 ### 기술 문서
 - [API 명세서](https://be.myocean.cloud/swagger-ui/index.html)
-- [포팅 매뉴얼](docs/특화프로젝트_너의OCEAN은/인프라/포팅매뉴얼.md)
+- [포팅 매뉴얼](docs/인프라/포팅매뉴얼.md)
 - [AI Agent 문서](ai/README_AGENT.md)
 - [배포 가이드](ai/DEPLOYMENT.md)
 
