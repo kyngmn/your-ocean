@@ -3,8 +3,8 @@ import asyncio
 import json
 import logging
 import sys
-from reasoning_persona_system import ReasoningPersonaSystem
-from bert_emotion_detector import BERTEmotionDetector
+from ai.systems.reasoning_persona_system import ReasoningPersonaSystem
+from ai.app.models.bert_emotion import BERTEmotionDetector
 
 # 로깅 설정
 logging.basicConfig(
