@@ -2,7 +2,7 @@ import streamlit as st
 import asyncio
 import logging
 import sys
-from reasoning_persona_system import ReasoningPersonaSystem
+from ai.systems.reasoning_persona_system import ReasoningPersonaSystem
 
 # 로깅 설정
 logging.basicConfig(

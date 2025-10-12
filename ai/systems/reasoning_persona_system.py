@@ -4,7 +4,7 @@ from typing import Dict, List, TypedDict, Annotated
 from langgraph.graph import StateGraph, END
 import operator
 from gms_client import GMSClient
-from bert_emotion_detector import BERTEmotionDetector
+from ai.app.models.bert_emotion import BERTEmotionDetector
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
