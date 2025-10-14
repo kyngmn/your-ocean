@@ -127,13 +127,30 @@
 #### 3. 나의 페르소나
 5가지 성격 요인별 페르소나 세포 시각화 및 상세 분석
 
-| <img src="./docs/산출물/[나의페르소나](1).png" width="300" alt="페르소나_개방밍"> | <img src="./docs/산출물/[나의페르소나](2).png" width="350" alt="페르소나_성실밍"> | <img src="./docs/산출물/[나의페르소나](3).png" width="330" alt="페르소나_외향밍"> |
-|:--:|:--:|:--:|
-| 개방밍(O) | 성실밍(C) | 외향밍(E) |
+<table>
+  <tr>
+    <td align="center">
+      <img src="./docs/산출물/[나의페르소나]_1.png" width="300" alt="페르소나_개방밍"><br>
+      개방밍(O)
+    </td>
+    <td align="center">
+      <img src="./docs/산출물/[나의페르소나]_2.png" width="350" alt="페르소나_성실밍"><br>
+      성실밍(C)
+    </td>
+    <td align="center">
+      <img src="./docs/산출물/[나의페르소나]_3.png" width="330" alt="페르소나_외향밍"><br>
+      외향밍(E)
+    </td>
+  </tr>
+</table>
 
-| <img src="./docs/산출물/[나의페르소나](4).png" width="400" alt="페르소나_친화밍"> | <img src="./docs/산출물/[나의페르소나](5).png" width="345" alt="페르소나_신경밍"> |  |
-|:--:|:--:|:--:|
-| 친화밍(A) | 신경밍(N) |  |
+
+<table>
+  <tr>
+    <td align="center"><img src="./docs/산출물/[나의페르소나]_4.png" width="400" alt="페르소나_친화밍"><br>친화밍(A)</td>
+    <td align="center"><img src="./docs/산출물/[나의페르소나]_5.png" width="345" alt="페르소나_신경밍"><br>신경밍(N)</td>
+  </tr>
+</table>
 
 
 *페르소나 세포들의 시각화 및 성격 요인 분석*
